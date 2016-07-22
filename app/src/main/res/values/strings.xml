@@ -7,4 +7,8 @@
     <string name="search_dialog_title">Book Search</string>
 
     <string name="user_input_search">Tolkien</string>
+
+    <string name="pager_title_books_shelf">Books Shelf</string>
+    <string name="pager_title_my_shelf">My Shelf</string>
+
 </resources>
