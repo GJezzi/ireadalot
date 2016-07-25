@@ -28,6 +28,16 @@ public class MyShelfFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_my_shelf, container, false);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
     public static MyShelfFragment newInstance(){
         MyShelfFragment myShelfFragment = new MyShelfFragment();
         Bundle args = new Bundle();

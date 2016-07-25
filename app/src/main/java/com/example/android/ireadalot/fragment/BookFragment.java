@@ -70,54 +70,21 @@ public class BookFragment extends Fragment {
         return rootView;
     }
 
-    public static BookFragment newInstance(){
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    public static BookFragment newInstance() {
         BookFragment bookFragment = new BookFragment();
         Bundle args = new Bundle();
         bookFragment.setArguments(args);
         return bookFragment;
 
     }
-
-//    @Override
-//    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater){
-//        menuInflater.inflate(R.menu.action_search_book, menu);
-//
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem menuItem){
-//        int id = menuItem.getItemId();
-//        if (id == R.id.action_search) {
-//            createSearchDialog();
-//            return true;
-//        }
-//
-//        return super.onOptionsItemSelected(menuItem);
-//    }
-//
-//    private void createSearchDialog() {
-//        final AlertDialog.Builder searchDialog = new AlertDialog.Builder(getContext());
-//        searchDialog.setTitle(R.string.search_dialog_title);
-//
-//        final EditText bookInput = new EditText(getContext());
-//        searchDialog.setView(bookInput);
-//
-//        searchDialog.setPositiveButton("Search", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialogInterface, int i) {
-//                String userResult = bookInput.getText().toString();
-//                Toast.makeText(getContext(), "Searching Books", Toast.LENGTH_SHORT).show();
-//                dialogInterface.dismiss();
-//            }
-//        });
-//        searchDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialogInterface, int i) {
-//                dialogInterface.dismiss();
-//            }
-//        });
-//
-//        searchDialog.create();
-//        searchDialog.show();
-//    }
 }

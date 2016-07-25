@@ -23,21 +23,19 @@ public class MainActivity extends AppCompatActivity {
     private final String LOG_TAG = MainActivity.class.getSimpleName();
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
-    FragmentPagerAdapter mFragmentPagerAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.addTab(tabLayout.newTab().setText(R.string.pager_title_books_shelf));
-        tabLayout.addTab(tabLayout.newTab().setText(R.string.pager_title_my_shelf));
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-
         final ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
-        mFragmentPagerAdapter = new PagerAdapter(getSupportFragmentManager());
-        viewPager.setAdapter(mFragmentPagerAdapter);
+        FragmentPagerAdapter fragmentPagerAdapter = new PagerAdapter(getSupportFragmentManager(), getApplicationContext());
+        viewPager.setAdapter(fragmentPagerAdapter);
+
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        tabLayout.setupWithViewPager(viewPager);
 
         checkPlayServices();
     }
