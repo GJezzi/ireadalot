@@ -28,6 +28,9 @@ public class BookFragment extends Fragment {
     private static final String LOG_TAG = BookFragment.class.getSimpleName();
     private static final String USER_SEARCH = "Tolkien";
 
+    private RecyclerView mRecyclerView;
+
+
     public BookFragment() { setHasOptionsMenu(true); }
 
     @Override
@@ -39,8 +42,8 @@ public class BookFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState ) {
         View rootView = inflater.inflate(R.layout.fragment_books, container, false);
 
-        final RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.books_recycler_view);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.books_recycler_view);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         ApiInterface apiInterface = ApiClient.getClient().create(ApiInterface.class);
 
@@ -51,9 +54,9 @@ public class BookFragment extends Fragment {
                 int okStatusCode = response.code();
                 if(response.isSuccessful()) {
                     ArrayList<Book> books = response.body().getItems();
-                    BookAdapter adapter = new BookAdapter(getContext(), books);
-                    recyclerView.setAdapter(adapter);
-                    adapter.notifyDataSetChanged();
+                    BookAdapter bookAdapter = new BookAdapter(getContext(), books);
+                    mRecyclerView.setAdapter(bookAdapter);
+                    bookAdapter.notifyDataSetChanged();
 
                 }
                 else {
@@ -66,7 +69,6 @@ public class BookFragment extends Fragment {
                 Log.e(LOG_TAG, t.getMessage());
             }
         });
-
         return rootView;
     }
 

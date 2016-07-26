@@ -15,12 +15,8 @@ public class Book {
     private String mEtag;
     @SerializedName("selfLink")
     private String mSelfLink;
-
     @SerializedName("volumeInfo")
     private VolumeInfo mVolumeInfo;
-
-
-
 
     public Book(String kind, String id, String etag, String selfLink, VolumeInfo volumeInfo, ImageLinks imageLinks){
         this.mKind = kind;

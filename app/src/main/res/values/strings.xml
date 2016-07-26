@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">iRead-A-Lot</string>
+    <string name="book_details_activity_title">Book Details</string>
 
     <string name="api_key_id">AIzaSyCMU3ZZKHD43MT4YdxljX4qCJqePksESok</string>
     <string name="action_add_book">Add Book</string>
