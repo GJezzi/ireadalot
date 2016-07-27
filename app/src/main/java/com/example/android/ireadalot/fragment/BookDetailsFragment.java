@@ -66,7 +66,7 @@ public class BookDetailsFragment extends Fragment {
         mBookDescription = (TextView) rootView.findViewById(R.id.book_content_description);
 
 
-        //setActionBarTitle(mBook.getVolumeInfo().getTitle());
+        setActionBarTitle(mBook.getVolumeInfo().getTitle());
 
         loadBookCover(mBook);
         loadBookDetailsFields(mBook);
@@ -106,7 +106,7 @@ public class BookDetailsFragment extends Fragment {
             if (mAppBar.getLayoutParams() instanceof CoordinatorLayout.LayoutParams) {
                 CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams)
                         mAppBar.getLayoutParams();
-                layoutParams.width = getResources().getDisplayMetrics().widthPixels;
+                layoutParams.height = getResources().getDisplayMetrics().widthPixels;
             }
         }
         mBookDetailsActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
