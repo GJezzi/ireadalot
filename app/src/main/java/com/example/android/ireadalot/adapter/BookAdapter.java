@@ -91,7 +91,8 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
             @Override
             public void onClick(View view) {
                 Toast.makeText(mContext, "Id: " + books.getId(), Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(mContext, BookDetailsActivity.class);
+                Intent intent = new Intent(mContext.getApplicationContext(), BookDetailsActivity.class);
+                //intent.putExtra(BookDetailsFragment.EXTRA_BOOK, mBooks);
                 mContext.startActivity(intent);
             }
         });

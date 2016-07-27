@@ -13,8 +13,12 @@ public class VolumeInfo {
     private String mTitle;
     @SerializedName("authors")
     private ArrayList<String> mAuthors = new ArrayList<>();
+    @SerializedName("publishedDate")
+    private String mBookYear;
     @SerializedName("description")
     private String mDescription;
+    @SerializedName("pageCount")
+    private String mPages;
 
     @SerializedName("imageLinks")
     private ImageLinks mImageLinks;
@@ -43,12 +47,28 @@ public class VolumeInfo {
         this.mAuthors = authors;
     }
 
+    public String getBookYear() {
+        return mBookYear;
+    }
+
+    public void setBookYear(String bookYear) {
+        this.mBookYear = bookYear;
+    }
+
     public String getDescription() {
         return mDescription;
     }
 
     public void setDescription(String description) {
         this.mDescription = description;
+    }
+
+    public String getPages() {
+        return mPages;
+    }
+
+    public void setPages(String pages) {
+        this.mPages = pages;
     }
 
     public ImageLinks getImageLinks() {

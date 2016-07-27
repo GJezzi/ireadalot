@@ -16,7 +16,6 @@ public class BookDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.book_details_activity);
 
-
         if (savedInstanceState == null) {
             Bundle args = new Bundle();
             BookDetailsFragment bookDetailsFragment = new BookDetailsFragment();

@@ -4,8 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/book_list_item_layout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-     >
+    android:layout_height="wrap_content" >
 
     <android.support.v7.widget.CardView
         android:id="@+id/book_card_view"
@@ -63,19 +62,6 @@
                 android:paddingRight="@dimen/book_title_padding"
                 android:textSize="@dimen/book_count"
                 android:text="Author"/>
-
-            <!--<ImageView-->
-                <!--android:id="@+id/overflow"-->
-                <!--android:layout_width="@dimen/ic_book_overflow_width"-->
-                <!--android:layout_height="@dimen/ic_book_overflow_height"-->
-                <!--android:layout_alignParentRight="true"-->
-                <!--android:layout_alignParentEnd="true"-->
-                <!--android:layout_below="@id/book_thumbnail"-->
-                <!--android:layout_marginTop="@dimen/ic_book_overflow_margin_top"-->
-                <!--android:scaleType="centerCrop"-->
-                <!--android:src="@drawable/ic_more_vert_black_48dp"-->
-                <!--android:onClick=""/>-->
-
         </RelativeLayout>
 
     </android.support.v7.widget.CardView>
