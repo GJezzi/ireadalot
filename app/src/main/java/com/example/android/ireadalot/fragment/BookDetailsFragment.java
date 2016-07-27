@@ -68,8 +68,8 @@ public class BookDetailsFragment extends Fragment {
 
         //setActionBarTitle(mBook.getVolumeInfo().getTitle());
 
-        //loadBookCover(mBook);
-        //loadBookDetailsFields(mBook);
+        loadBookCover(mBook);
+        loadBookDetailsFields(mBook);
         return rootView;
     }
 

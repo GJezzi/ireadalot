@@ -2,10 +2,12 @@ package com.example.android.ireadalot.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 /**
  * Created by gjezzi on 21/07/16.
  */
-public class ImageLinks {
+public class ImageLinks implements Serializable{
 
     @SerializedName("smallThumbnail")
     private String  mSmallThumb;

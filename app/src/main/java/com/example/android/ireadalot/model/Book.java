@@ -2,10 +2,13 @@ package com.example.android.ireadalot.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 /**
  * Created by gjezzi on 22/06/16.
  */
-public class Book {
+
+public class Book implements Serializable{
 
     @SerializedName("kind")
     private String mKind;

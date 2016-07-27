@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.android.ireadalot.R;
 import com.example.android.ireadalot.activity.BookDetailsActivity;
+import com.example.android.ireadalot.fragment.BookDetailsFragment;
 import com.example.android.ireadalot.model.Book;
 
 import java.util.ArrayList;
@@ -92,7 +93,7 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
             public void onClick(View view) {
                 Toast.makeText(mContext, "Id: " + books.getId(), Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(mContext.getApplicationContext(), BookDetailsActivity.class);
-                //intent.putExtra(BookDetailsFragment.EXTRA_BOOK, mBooks);
+                intent.putExtra(BookDetailsFragment.EXTRA_BOOK, books);
                 mContext.startActivity(intent);
             }
         });
