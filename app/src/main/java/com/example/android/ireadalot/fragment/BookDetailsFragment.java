@@ -7,6 +7,7 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,18 +43,20 @@ public class BookDetailsFragment extends Fragment {
     private CollapsingToolbarLayout mCollapsingToolbarLayout;
     private FloatingActionButton mFab;
 
-    public BookDetailsFragment() { setHasOptionsMenu(true); }
+    public BookDetailsFragment() {
+        setHasOptionsMenu(true);
+    }
 
     @Override
-    public void onCreate (Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState ) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_book_details, container, false);
 
-        mBook = (Book)getActivity().getIntent().getSerializableExtra(EXTRA_BOOK);
+        mBook = (Book) getActivity().getIntent().getSerializableExtra(EXTRA_BOOK);
         mToolbar = (Toolbar) rootView.findViewById(R.id.book_details_toolbar);
         mAppBar = (AppBarLayout) rootView.findViewById(R.id.book_details_appBar);
         mCollapsingToolbarLayout = (CollapsingToolbarLayout) rootView.findViewById(R.id.book_details_collapsing_toolbar);
@@ -65,7 +68,6 @@ public class BookDetailsFragment extends Fragment {
         mBookPages = (TextView) rootView.findViewById(R.id.book_content_pages);
         mBookDescription = (TextView) rootView.findViewById(R.id.book_content_description);
 
-
         setActionBarTitle(mBook.getVolumeInfo().getTitle());
 
         loadBookCover(mBook);
@@ -73,7 +75,7 @@ public class BookDetailsFragment extends Fragment {
         return rootView;
     }
 
-    private void loadBookCover(Book book){
+    private void loadBookCover(Book book) {
         Glide.with(getActivity())
                 .load(mBook.getVolumeInfo().getImageLinks().getThumbnail())
                 .crossFade()
@@ -99,8 +101,9 @@ public class BookDetailsFragment extends Fragment {
         }
     }
 
-    private void setActionBarTitle(String title){
-        mBookDetailsActivity.setSupportActionBar(mToolbar);
+    private void setActionBarTitle(String title) {
+        AppCompatActivity activity = ((AppCompatActivity) getActivity());
+        activity.setSupportActionBar(mToolbar);
 
         if (mAppBar != null) {
             if (mAppBar.getLayoutParams() instanceof CoordinatorLayout.LayoutParams) {
@@ -109,12 +112,12 @@ public class BookDetailsFragment extends Fragment {
                 layoutParams.height = getResources().getDisplayMetrics().widthPixels;
             }
         }
-        mBookDetailsActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        activity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         if (mCollapsingToolbarLayout != null) {
-            mBookDetailsActivity.getSupportActionBar().setDisplayShowTitleEnabled(true);
+            activity.getSupportActionBar().setDisplayShowTitleEnabled(true);
             mCollapsingToolbarLayout.setTitle(title);
         } else {
-            mBookDetailsActivity.getSupportActionBar().setDisplayShowTitleEnabled(false);
+            activity.getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
     }
 }

@@ -21,8 +21,8 @@
         </activity>
 
         <activity android:name=".activity.BookDetailsActivity"
-            android:label="@string/book_details_activity_title"
-            android:parentActivityName=".activity.MainActivity" >
+            android:parentActivityName=".activity.MainActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.MainActivity" />
