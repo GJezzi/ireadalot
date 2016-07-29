@@ -20,7 +20,8 @@
         android:id="@+id/book_details_appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:elevation="4dp">
+        android:elevation="4dp"
+        android:backgroundTint="@color/colorPrimary">
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/book_details_collapsing_toolbar"
@@ -50,8 +51,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
+        android:onClick="addBook"
         android:elevation="6dp"
         app:fabSize="normal"
         app:layout_anchor="@id/book_details_appBar"
-        app:layout_anchorGravity="bottom|right|end"/>
+        app:layout_anchorGravity="bottom|right|end"
+        app:backgroundTint="@color/colorAccent"
+        android:src="@drawable/ic_add_white_48dp"/>
 </android.support.design.widget.CoordinatorLayout>

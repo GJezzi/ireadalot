@@ -19,6 +19,8 @@ import com.bumptech.glide.Glide;
 import com.example.android.ireadalot.R;
 import com.example.android.ireadalot.activity.BookDetailsActivity;
 import com.example.android.ireadalot.model.Book;
+import com.example.android.ireadalot.utils.Constants;
+import com.firebase.client.Firebase;
 
 /**
  * Created by gjezzi on 25/07/16.
@@ -42,6 +44,7 @@ public class BookDetailsFragment extends Fragment {
     private AppBarLayout mAppBar;
     private CollapsingToolbarLayout mCollapsingToolbarLayout;
     private FloatingActionButton mFab;
+    private String mBookId;
 
     public BookDetailsFragment() {
         setHasOptionsMenu(true);
@@ -72,6 +75,7 @@ public class BookDetailsFragment extends Fragment {
 
         loadBookCover(mBook);
         loadBookDetailsFields(mBook);
+        addBook();
         return rootView;
     }
 
@@ -84,7 +88,6 @@ public class BookDetailsFragment extends Fragment {
 
     private void loadBookDetailsFields(Book book) {
         StringBuilder builder = new StringBuilder();
-
         mBookTitle.setText(book.getVolumeInfo().getTitle());
 
         for (String string : book.getVolumeInfo().getAuthors()) {
@@ -119,5 +122,17 @@ public class BookDetailsFragment extends Fragment {
         } else {
             activity.getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
+    }
+
+    public void addBook() {
+        final Firebase ref = new Firebase(Constants.FIREBASE_URL);
+
+        mFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ref.child("myShelfList").setValue(mBook.getId());
+            }
+        });
+
     }
 }
