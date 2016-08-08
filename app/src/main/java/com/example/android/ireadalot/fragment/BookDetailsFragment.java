@@ -9,6 +9,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,19 +18,27 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.android.ireadalot.R;
-import com.example.android.ireadalot.activity.BookDetailsActivity;
+import com.example.android.ireadalot.adapter.BookAdapter;
 import com.example.android.ireadalot.model.Book;
 import com.example.android.ireadalot.utils.Constants;
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
+
+import java.util.ArrayList;
 
 /**
  * Created by gjezzi on 25/07/16.
  */
 public class BookDetailsFragment extends Fragment {
 
+    private static final String LOG_TAG = BookDetailsFragment.class.getSimpleName();
+
     public static final String EXTRA_BOOK = "book";
 
-    private BookDetailsActivity mBookDetailsActivity;
+    private ArrayList<Book> mMyshelfBookList = new ArrayList<>();
+    private BookAdapter mBookAdapter;
 
     private Context mContext;
     private ImageView mBookIcon;
@@ -58,6 +67,22 @@ public class BookDetailsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_book_details, container, false);
+
+        Firebase bookIdRef = new Firebase(Constants.FIREBASE_URL).child("bookId");
+        bookIdRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.e(LOG_TAG, "The Data Has Changed!");
+
+                mBookId = (String) dataSnapshot.getValue();
+
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
 
         mBook = (Book) getActivity().getIntent().getSerializableExtra(EXTRA_BOOK);
         mToolbar = (Toolbar) rootView.findViewById(R.id.book_details_toolbar);
@@ -130,7 +155,7 @@ public class BookDetailsFragment extends Fragment {
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ref.child("myShelfList").setValue(mBook.getId());
+                ref.child("bookId").setValue(mBook.getId());
             }
         });
 

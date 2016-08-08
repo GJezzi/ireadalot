@@ -11,6 +11,13 @@
         android:orientation="vertical"
         tools:context=".activity.MainActivity">
 
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/my_shelf_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical">
+
+        </android.support.v7.widget.RecyclerView>
 
     </android.support.design.widget.CoordinatorLayout>
 </FrameLayout>

@@ -30,7 +30,6 @@ public class BookFragment extends Fragment {
 
     private RecyclerView mRecyclerView;
 
-
     public BookFragment() { setHasOptionsMenu(true); }
 
     @Override

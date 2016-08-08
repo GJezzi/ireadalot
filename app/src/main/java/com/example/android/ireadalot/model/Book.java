@@ -21,14 +21,12 @@ public class Book implements Serializable{
     @SerializedName("volumeInfo")
     private VolumeInfo mVolumeInfo;
 
-    public Book(String kind, String id, String etag, String selfLink, VolumeInfo volumeInfo, ImageLinks imageLinks){
+    public Book(String kind, String id, String etag, String selfLink, VolumeInfo volumeInfo){
         this.mKind = kind;
         this.mId = id;
         this.mEtag = etag;
         this.mSelfLink = selfLink;
         this.mVolumeInfo = volumeInfo;
-
-
     }
 
     public String getKind() {

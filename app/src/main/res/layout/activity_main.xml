@@ -31,9 +31,9 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
     <fragment
-        android:name="com.example.android.ireadalot.fragment.MyShelfFragment"
+        android:name="com.example.android.ireadalot.fragment.BookFragment"
         android:id="@+id/books_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:layout="@layout/fragment_my_shelf" />
+        tools:layout="@layout/fragment_books" />
 </android.support.design.widget.CoordinatorLayout>
