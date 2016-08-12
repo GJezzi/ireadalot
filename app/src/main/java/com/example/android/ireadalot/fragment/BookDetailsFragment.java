@@ -37,7 +37,7 @@ public class BookDetailsFragment extends Fragment {
 
     public static final String EXTRA_BOOK = "book";
 
-    private ArrayList<Book> mMyshelfBookList = new ArrayList<>();
+    private ArrayList<Book> mMyshelfBookList;
     private BookAdapter mBookAdapter;
 
     private Context mContext;
@@ -54,6 +54,7 @@ public class BookDetailsFragment extends Fragment {
     private CollapsingToolbarLayout mCollapsingToolbarLayout;
     private FloatingActionButton mFab;
     private String mBookId;
+    private String fBookTitleName;
 
     public BookDetailsFragment() {
         setHasOptionsMenu(true);
@@ -68,14 +69,15 @@ public class BookDetailsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_book_details, container, false);
 
-        Firebase bookIdRef = new Firebase(Constants.FIREBASE_URL).child("bookId");
+        Firebase bookIdRef = new Firebase(Constants.FIREBASE_URL).child("myBookList");
         bookIdRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.e(LOG_TAG, "The Data Has Changed!");
 
-                mBookId = (String) dataSnapshot.getValue();
-
+                mBook = dataSnapshot.getValue(Book.class);
+                //mBookId = (String) dataSnapshot.getValue();
+                //fBookTitleName = (String) dataSnapshot.getValue();
             }
 
             @Override
@@ -154,8 +156,11 @@ public class BookDetailsFragment extends Fragment {
 
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                ref.child("bookId").setValue(mBook.getId());
+           public void onClick(View view) {
+                //Book book = new Book(mBook.getVolumeInfo());
+                ref.child("myBookList").setValue(mBook);
+                //ref.child("bookTitle").setValue(mBook.getVolumeInfo().getTitle());
+                //ref.child("bookId").setValue(mBook.getId());
             }
         });
 

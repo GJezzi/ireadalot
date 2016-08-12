@@ -8,7 +8,7 @@ import java.io.Serializable;
  * Created by gjezzi on 22/06/16.
  */
 
-public class Book implements Serializable{
+public class Book implements Serializable {
 
     @SerializedName("kind")
     private String mKind;
@@ -20,6 +20,8 @@ public class Book implements Serializable{
     private String mSelfLink;
     @SerializedName("volumeInfo")
     private VolumeInfo mVolumeInfo;
+
+    public Book() { }
 
     public Book(String kind, String id, String etag, String selfLink, VolumeInfo volumeInfo){
         this.mKind = kind;
