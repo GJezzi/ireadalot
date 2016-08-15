@@ -14,6 +14,7 @@ public class ImageLinks implements Serializable{
     @SerializedName("thumbnail")
     private String mThumbnail;
 
+    public ImageLinks() { }
 
     public ImageLinks (String smallThumb, String thumbnail) {
         this.mSmallThumb = smallThumb;
@@ -32,7 +33,7 @@ public class ImageLinks implements Serializable{
         return mThumbnail;
     }
 
-    public void setmThumbnail(String mThumbnail) {
-        this.mThumbnail = mThumbnail;
+    public void setThumbnail(String thumbnail) {
+        this.mThumbnail = thumbnail;
     }
 }

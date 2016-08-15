@@ -24,6 +24,7 @@ public class VolumeInfo implements Serializable{
     @SerializedName("imageLinks")
     private ImageLinks mImageLinks;
 
+    public VolumeInfo() { }
 
     public VolumeInfo (String title, ArrayList<String> authors, String description, ImageLinks imageLinks ) {
         this.mTitle = title;

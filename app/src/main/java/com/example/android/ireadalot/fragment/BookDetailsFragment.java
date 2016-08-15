@@ -76,8 +76,6 @@ public class BookDetailsFragment extends Fragment {
                 Log.e(LOG_TAG, "The Data Has Changed!");
 
                 mBook = dataSnapshot.getValue(Book.class);
-                //mBookId = (String) dataSnapshot.getValue();
-                //fBookTitleName = (String) dataSnapshot.getValue();
             }
 
             @Override
@@ -157,10 +155,8 @@ public class BookDetailsFragment extends Fragment {
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
            public void onClick(View view) {
-                //Book book = new Book(mBook.getVolumeInfo());
                 ref.child("myBookList").setValue(mBook);
-                //ref.child("bookTitle").setValue(mBook.getVolumeInfo().getTitle());
-                //ref.child("bookId").setValue(mBook.getId());
+
             }
         });
 
