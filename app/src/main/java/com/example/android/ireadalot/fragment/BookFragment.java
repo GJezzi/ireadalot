@@ -31,7 +31,6 @@ import retrofit2.Response;
 public class BookFragment extends Fragment {
 
     private static final String LOG_TAG = BookFragment.class.getSimpleName();
-    private static final String USER_SEARCH = "";
 
     private RecyclerView mRecyclerView;
     private FloatingActionButton mFab;
@@ -53,30 +52,7 @@ public class BookFragment extends Fragment {
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.books_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-         mApiInterface = ApiClient.getClient().create(ApiInterface.class);
-
-//        Call<BookResponse> call = apiInterface.getBooks(USER_SEARCH);
-//        call.enqueue(new Callback<BookResponse>() {
-//            @Override
-//            public void onResponse(Call<BookResponse> call, Response<BookResponse> response) {
-//                int okStatusCode = response.code();
-//                if(response.isSuccessful()) {
-//                    ArrayList<Book> books = response.body().getItems();
-//                    BookAdapter bookAdapter = new BookAdapter(getContext(), books);
-//                    mRecyclerView.setAdapter(bookAdapter);
-//                    bookAdapter.notifyDataSetChanged();
-//
-//                }
-//                else {
-//                    Log.e(LOG_TAG, "Error");
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<BookResponse> call, Throwable t) {
-//                Log.e(LOG_TAG, t.getMessage());
-//            }
-//        });
+        mApiInterface = ApiClient.getClient().create(ApiInterface.class);
 
         searchBook();
         return rootView;
@@ -85,11 +61,13 @@ public class BookFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        searchBook();
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        searchBook();
     }
 
     public static BookFragment newInstance() {
@@ -111,7 +89,7 @@ public class BookFragment extends Fragment {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 String userResult = bookInput.getText().toString();
-                Toast.makeText(getActivity(), "Searching Books", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Searching: " + userResult, Toast.LENGTH_SHORT).show();
 
                 Call<BookResponse> call = mApiInterface.getBooks(userResult);
                 call.enqueue(new Callback<BookResponse>() {

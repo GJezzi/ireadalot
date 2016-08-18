@@ -1,7 +1,6 @@
 package com.example.android.ireadalot.activity;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 
 import com.example.android.ireadalot.R;
 import com.example.android.ireadalot.fragment.BookDetailsFragment;
@@ -9,7 +8,7 @@ import com.example.android.ireadalot.fragment.BookDetailsFragment;
 /**
  * Created by gjezzi on 25/07/16.
  */
-public class BookDetailsActivity extends AppCompatActivity {
+public class BookDetailsActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState){

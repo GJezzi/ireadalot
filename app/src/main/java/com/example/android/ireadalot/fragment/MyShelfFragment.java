@@ -10,6 +10,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.example.android.ireadalot.R;
 import com.example.android.ireadalot.adapter.BookAdapter;
@@ -28,6 +30,10 @@ public class MyShelfFragment extends Fragment {
     private BookAdapter mBookAdapter;
     private RecyclerView mRecyclerView;
     private Book mBook;
+    private TextView mAuthorName;
+    private TextView mBookTitle;
+    private TextView mBookDescription;
+    private ImageView mBookCover;
 
     private Context mContext;
 
@@ -43,9 +49,17 @@ public class MyShelfFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_my_shelf, container, false);
 
+        mBookTitle = (TextView) rootView.findViewById(R.id.book_content_title);
+        mAuthorName = (TextView) rootView.findViewById(R.id.book_content_author);
+        mBookDescription = (TextView) rootView.findViewById(R.id.book_content_description);
+        mBookCover = (ImageView) rootView.findViewById(R.id.book_thumbnail);
+
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.my_shelf_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        //mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setHasFixedSize(true);
+
+        mBookAdapter = new BookAdapter(mContext, mMyShelfBookList);
+        mRecyclerView.setAdapter(mBookAdapter);
 
         return rootView;
     }
@@ -62,13 +76,15 @@ public class MyShelfFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == BOOK_DETAILS_ACTIVITY_REQUEST) {
             if (resultCode == Activity.RESULT_OK) {
-                mBookAdapter = new BookAdapter(mContext, mMyShelfBookList);
-                mRecyclerView.setAdapter(mBookAdapter);
+
+                mMyShelfBookList.add(mBook);
                 mBookAdapter.notifyDataSetChanged();
+
+            } else {
+                super.onActivityResult(requestCode, resultCode, data);
             }
         }
     }

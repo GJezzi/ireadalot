@@ -35,8 +35,11 @@ public class BookDetailsFragment extends Fragment {
 
     private static final String LOG_TAG = BookDetailsFragment.class.getSimpleName();
 
+    private final static int BOOK_DETAILS_ACTIVITY_REQUEST = 1;
+
     public static final String EXTRA_BOOK = "book";
 
+    private Firebase mMyShelfListRef;
     private ArrayList<Book> mMyshelfBookList;
     private BookAdapter mBookAdapter;
 
@@ -48,13 +51,11 @@ public class BookDetailsFragment extends Fragment {
     private TextView mBookPages;
     private TextView mBookDescription;
     private Book mBook;
-    private String mId;
     private Toolbar mToolbar;
     private AppBarLayout mAppBar;
     private CollapsingToolbarLayout mCollapsingToolbarLayout;
     private FloatingActionButton mFab;
-    private String mBookId;
-    private String fBookTitleName;
+
 
     public BookDetailsFragment() {
         setHasOptionsMenu(true);
@@ -69,13 +70,14 @@ public class BookDetailsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_book_details, container, false);
 
-        Firebase bookIdRef = new Firebase(Constants.FIREBASE_URL).child("myBookList");
-        bookIdRef.addValueEventListener(new ValueEventListener() {
+        mMyShelfListRef = new Firebase(Constants.FIREBASE_URL_MY_SHELF_LIST);
+        mMyShelfListRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.e(LOG_TAG, "The Data Has Changed!");
 
-                mBook = dataSnapshot.getValue(Book.class);
+                //mBook = dataSnapshot.getValue(Book.class);
+
             }
 
             @Override
@@ -104,14 +106,14 @@ public class BookDetailsFragment extends Fragment {
         return rootView;
     }
 
-    private void loadBookCover(Book book) {
+    public void loadBookCover(Book book) {
         Glide.with(getActivity())
                 .load(mBook.getVolumeInfo().getImageLinks().getThumbnail())
                 .crossFade()
                 .into(mBookIcon);
     }
 
-    private void loadBookDetailsFields(Book book) {
+    public void loadBookDetailsFields(Book book) {
         StringBuilder builder = new StringBuilder();
         mBookTitle.setText(book.getVolumeInfo().getTitle());
 
@@ -120,13 +122,12 @@ public class BookDetailsFragment extends Fragment {
                 builder.append(", ");
             }
             builder.append(string);
-            mAuthorName.setText(builder.toString());
-
-            mBookYear.setText(book.getVolumeInfo().getBookYear());
-            mBookPages.setText(book.getVolumeInfo().getPages());
-            mBookDescription.setText(book.getVolumeInfo().getDescription());
-
         }
+        mAuthorName.setText(builder.toString());
+
+        mBookYear.setText(book.getVolumeInfo().getBookYear());
+        mBookPages.setText(book.getVolumeInfo().getPages());
+        mBookDescription.setText(book.getVolumeInfo().getDescription());
     }
 
     private void setActionBarTitle(String title) {
@@ -154,11 +155,13 @@ public class BookDetailsFragment extends Fragment {
 
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
-           public void onClick(View view) {
-                ref.child("myBookList").setValue(mBook);
+            public void onClick(View view) {
 
+                ref.child(Constants.FIREBASE_MY_SHELF_BOOKS).push().setValue(mBook);
+                getActivity().finish();
             }
         });
-
     }
+
+
 }

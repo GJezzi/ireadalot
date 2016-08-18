@@ -3,11 +3,8 @@ package com.example.android.ireadalot.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.CardView;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -91,33 +88,12 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
         booksViewHolder.mBookCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(mContext, "Id: " + books.getId(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, "Book Id: " + books.getId(), Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(mContext.getApplicationContext(), BookDetailsActivity.class);
                 intent.putExtra(BookDetailsFragment.EXTRA_BOOK, books);
                 mContext.startActivity(intent);
             }
         });
-    }
-
-    private void showPopUpMenu(View view){
-        PopupMenu popupMenu = new PopupMenu(mContext, view);
-        MenuInflater menuInflater = popupMenu.getMenuInflater();
-        menuInflater.inflate(R.menu.book_menu, popupMenu.getMenu());
-        popupMenu.setOnMenuItemClickListener(new MenuItemClickListener());
-    }
-
-    class MenuItemClickListener implements PopupMenu.OnMenuItemClickListener{
-        public MenuItemClickListener(){ }
-
-        @Override
-        public boolean onMenuItemClick(MenuItem menuItem) {
-            int id = menuItem.getItemId();
-            if(id == R.id.action_add_book){
-                Toast.makeText(mContext, "Add to Library", Toast.LENGTH_SHORT).show();
-                return true;
-            }
-            return false;
-        }
     }
 
     @Override

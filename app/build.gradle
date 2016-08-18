@@ -35,18 +35,20 @@ dependencies {
     testCompile 'junit:junit:4.12'
 
     /* Firebase */
-    compile 'com.google.firebase:firebase-core:9.2.0'
-    compile 'com.google.firebase:firebase-database:9.2.0'
-    compile 'com.google.firebase:firebase-storage:9.2.0'
-    compile 'com.google.firebase:firebase-auth:9.2.0'
+    compile 'com.google.firebase:firebase-core:9.4.0'
+    compile 'com.google.firebase:firebase-database:9.4.0'
+    compile 'com.google.firebase:firebase-storage:9.4.0'
+    compile 'com.google.firebase:firebase-auth:9.4.0'
     compile 'com.firebase:firebase-client-android:2.4.0'
 
     /* Google Services */
     compile 'com.google.apis:google-api-services-books:v1-rev86-1.22.0'
     compile 'com.google.api-client:google-api-client:1.19.1'
-    compile 'com.google.android.gms:play-services:9.2.0'
-    compile 'com.google.android.gms:play-services-safetynet:9.2.0'
-    compile 'com.google.android.gms:play-services-auth:9.2.0'
+    compile 'com.google.android.gms:play-services:9.4.0'
+    compile 'com.google.android.gms:play-services-safetynet:9.4.0'
+    compile 'com.google.android.gms:play-services-auth:9.4.0'
+
+    /* Android Libraries */
     compile 'com.android.support:appcompat-v7:24.1.1'
     compile 'com.android.support:support-v4:24.1.1'
     compile 'com.android.support:recyclerview-v7:24.1.1'
