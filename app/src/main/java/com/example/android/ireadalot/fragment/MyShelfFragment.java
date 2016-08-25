@@ -7,13 +7,16 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.ireadalot.R;
+import com.example.android.ireadalot.activity.BookDetailsActivity;
 import com.example.android.ireadalot.adapter.BookAdapter;
 import com.example.android.ireadalot.model.Book;
 
@@ -24,11 +27,10 @@ public class MyShelfFragment extends Fragment {
 
     private static final String LOG_TAG = MyShelfFragment.class.getSimpleName();
 
-    private final static int BOOK_DETAILS_ACTIVITY_REQUEST = 1;
-
     private ArrayList<Book> mMyShelfBookList = new ArrayList<>();
     private BookAdapter mBookAdapter;
     private RecyclerView mRecyclerView;
+    private BookAdapter.OnBookClickListener mBookClickListener;
     private Book mBook;
     private TextView mAuthorName;
     private TextView mBookTitle;
@@ -58,7 +60,7 @@ public class MyShelfFragment extends Fragment {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.setHasFixedSize(true);
 
-        mBookAdapter = new BookAdapter(mContext, mMyShelfBookList);
+        mBookAdapter = new BookAdapter(mContext, mMyShelfBookList, mBookClickListener);
         mRecyclerView.setAdapter(mBookAdapter);
 
         return rootView;
@@ -77,11 +79,26 @@ public class MyShelfFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        if (requestCode == BOOK_DETAILS_ACTIVITY_REQUEST) {
+        if (requestCode == BookDetailsActivity.BOOK_DETAILS_REQUEST_CODE) {
             if (resultCode == Activity.RESULT_OK) {
 
-                mMyShelfBookList.add(mBook);
-                mBookAdapter.notifyDataSetChanged();
+                Log.d(LOG_TAG, "Request Code: " + requestCode);
+
+                data.getSerializableExtra(BookDetailsFragment.EXTRA_BOOK);
+
+                Toast.makeText(getContext(), "Result: " + data, Toast.LENGTH_LONG).show();
+
+//                String bookName = mBookTitle.getText().toString();
+//                String authorName = mAuthorName.getText().toString();
+//                String bookDesc = mBookDescription.getText().toString();
+//                //this.mBookCover.getImageAlpha();
+//
+//                mBookTitle.setText(bookName);
+//                mAuthorName.setText(authorName);
+//                mBookDescription.setText(bookDesc);
+//
+//                mMyShelfBookList.add(mBook);
+//                mBookAdapter.notifyDataSetChanged();
 
             } else {
                 super.onActivityResult(requestCode, resultCode, data);

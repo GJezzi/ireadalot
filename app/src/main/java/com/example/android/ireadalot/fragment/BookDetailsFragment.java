@@ -1,6 +1,8 @@
 package com.example.android.ireadalot.fragment;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -34,8 +36,6 @@ import java.util.ArrayList;
 public class BookDetailsFragment extends Fragment {
 
     private static final String LOG_TAG = BookDetailsFragment.class.getSimpleName();
-
-    private final static int BOOK_DETAILS_ACTIVITY_REQUEST = 1;
 
     public static final String EXTRA_BOOK = "book";
 
@@ -156,7 +156,8 @@ public class BookDetailsFragment extends Fragment {
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent intent = new Intent();
+                getActivity().setResult(Activity.RESULT_OK, intent);
                 ref.child(Constants.FIREBASE_MY_SHELF_BOOKS).push().setValue(mBook);
                 getActivity().finish();
             }

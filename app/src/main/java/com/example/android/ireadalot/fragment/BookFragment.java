@@ -1,6 +1,8 @@
 package com.example.android.ireadalot.fragment;
 
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -15,6 +17,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.android.ireadalot.R;
+import com.example.android.ireadalot.activity.BookDetailsActivity;
 import com.example.android.ireadalot.adapter.BookAdapter;
 import com.example.android.ireadalot.model.Book;
 import com.example.android.ireadalot.model.BookResponse;
@@ -32,7 +35,11 @@ public class BookFragment extends Fragment {
 
     private static final String LOG_TAG = BookFragment.class.getSimpleName();
 
+    private Context mContext;
+    private Book mBook;
+    private ArrayList<Book> mBooksList;
     private RecyclerView mRecyclerView;
+    private BookAdapter.OnBookClickListener mBookClickListener;
     private FloatingActionButton mFab;
     private ApiInterface mApiInterface;
 
@@ -47,6 +54,7 @@ public class BookFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState ) {
         View rootView = inflater.inflate(R.layout.fragment_books, container, false);
 
+        mContext = getContext();
         mFab = (FloatingActionButton) rootView.findViewById(R.id.fab_book_search);
 
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.books_recycler_view);
@@ -98,7 +106,16 @@ public class BookFragment extends Fragment {
                         int okStatusCode = response.code();
                         if(response.isSuccessful()) {
                             ArrayList<Book> books = response.body().getItems();
-                            BookAdapter bookAdapter = new BookAdapter(getContext(), books);
+
+                            BookAdapter bookAdapter = new BookAdapter(getContext(), books, new BookAdapter.OnBookClickListener() {
+                                @Override
+                                public void onBookClicked(Book book) {
+                                    Toast.makeText(mContext, "Book Id: " + book.getId(), Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(getContext(), BookDetailsActivity.class);
+                                    intent.putExtra(BookDetailsFragment.EXTRA_BOOK, book);
+                                    startActivityForResult(intent, BookDetailsActivity.BOOK_DETAILS_REQUEST_CODE);
+                                }
+                            });
                             mRecyclerView.setAdapter(bookAdapter);
                             bookAdapter.notifyDataSetChanged();
 

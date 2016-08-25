@@ -10,6 +10,8 @@ import com.example.android.ireadalot.fragment.BookDetailsFragment;
  */
 public class BookDetailsActivity extends BaseActivity {
 
+    public final static int BOOK_DETAILS_REQUEST_CODE = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
