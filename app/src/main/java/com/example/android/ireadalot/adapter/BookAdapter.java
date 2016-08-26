@@ -29,7 +29,7 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
     private OnBookClickListener mBookClickListener;
     private Context mContext;
 
-    public BookAdapter(Context context,ArrayList<Book> books, OnBookClickListener onBookClickListener) {
+    public BookAdapter(Context context, ArrayList<Book> books, OnBookClickListener onBookClickListener) {
         this.mContext = context;
         this.mBooks = books;
         this.mBookClickListener = onBookClickListener;

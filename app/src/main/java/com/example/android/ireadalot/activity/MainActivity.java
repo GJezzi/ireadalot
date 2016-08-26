@@ -13,7 +13,7 @@ import com.example.android.ireadalot.adapter.PagerAdapter;
 
 public class MainActivity extends BaseActivity {
 
-    private final String LOG_TAG = MainActivity.class.getSimpleName();
+    private final String LOG_TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +31,6 @@ public class MainActivity extends BaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
         return true;
-
     }
 
     @Override
@@ -43,9 +42,5 @@ public class MainActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-//        for (Fragment fragment: getSupportFragmentManager().getFragments()) {
-//            fragment.onActivityResult(requestCode, resultCode, data);
-//        }
-//        Log.d(LOG_TAG, "Request Code: " + requestCode);
     }
 }

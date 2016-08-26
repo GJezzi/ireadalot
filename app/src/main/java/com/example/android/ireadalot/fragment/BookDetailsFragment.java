@@ -1,8 +1,6 @@
 package com.example.android.ireadalot.fragment;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -35,9 +33,12 @@ import java.util.ArrayList;
  */
 public class BookDetailsFragment extends Fragment {
 
-    private static final String LOG_TAG = BookDetailsFragment.class.getSimpleName();
+    private static final String LOG_TAG = "BookDetailsFragment";
 
     public static final String EXTRA_BOOK = "book";
+
+    final Firebase mRef = new Firebase(Constants.FIREBASE_URL);
+    //final DatabaseReference mDBRef = FirebaseDatabase.getInstance().getReference();
 
     private Firebase mMyShelfListRef;
     private ArrayList<Book> mMyshelfBookList;
@@ -74,10 +75,13 @@ public class BookDetailsFragment extends Fragment {
         mMyShelfListRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.e(LOG_TAG, "The Data Has Changed!");
+                Log.d(LOG_TAG, "The Data Has Changed!");
+                Log.d(LOG_TAG, "There are " + dataSnapshot.getChildrenCount() + " books in the list.");
 
-                //mBook = dataSnapshot.getValue(Book.class);
-
+                for (DataSnapshot bookSnapshot : dataSnapshot.getChildren()) {
+                    Book book = bookSnapshot.getValue(Book.class);
+                    Log.d(LOG_TAG, book.getVolumeInfo().getTitle() + " - " + book.getVolumeInfo().getAuthors());
+                }
             }
 
             @Override
@@ -151,18 +155,16 @@ public class BookDetailsFragment extends Fragment {
     }
 
     public void addBook() {
-        final Firebase ref = new Firebase(Constants.FIREBASE_URL);
-
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent();
-                getActivity().setResult(Activity.RESULT_OK, intent);
-                ref.child(Constants.FIREBASE_MY_SHELF_BOOKS).push().setValue(mBook);
+                onBookAdded(mBook);
                 getActivity().finish();
             }
         });
     }
 
-
+    public void onBookAdded(Book book) {
+        mRef.child(Constants.FIREBASE_MY_SHELF_BOOKS).push().setValue(book);
+    }
 }
