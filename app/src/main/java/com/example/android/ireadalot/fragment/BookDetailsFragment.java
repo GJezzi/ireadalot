@@ -9,7 +9,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,10 +20,7 @@ import com.example.android.ireadalot.R;
 import com.example.android.ireadalot.adapter.BookAdapter;
 import com.example.android.ireadalot.model.Book;
 import com.example.android.ireadalot.utils.Constants;
-import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
-import com.firebase.client.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -56,6 +52,7 @@ public class BookDetailsFragment extends Fragment {
     private AppBarLayout mAppBar;
     private CollapsingToolbarLayout mCollapsingToolbarLayout;
     private FloatingActionButton mFab;
+    private String mBookId;
 
 
     public BookDetailsFragment() {
@@ -70,25 +67,6 @@ public class BookDetailsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_book_details, container, false);
-
-        mMyShelfListRef = new Firebase(Constants.FIREBASE_URL_MY_SHELF_LIST);
-        mMyShelfListRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d(LOG_TAG, "The Data Has Changed!");
-                Log.d(LOG_TAG, "There are " + dataSnapshot.getChildrenCount() + " books in the list.");
-
-                for (DataSnapshot bookSnapshot : dataSnapshot.getChildren()) {
-                    Book book = bookSnapshot.getValue(Book.class);
-                    Log.d(LOG_TAG, book.getVolumeInfo().getTitle() + " - " + book.getVolumeInfo().getAuthors());
-                }
-            }
-
-            @Override
-            public void onCancelled(FirebaseError firebaseError) {
-
-            }
-        });
 
         mBook = (Book) getActivity().getIntent().getSerializableExtra(EXTRA_BOOK);
         mToolbar = (Toolbar) rootView.findViewById(R.id.book_details_toolbar);

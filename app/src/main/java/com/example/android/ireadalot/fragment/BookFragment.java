@@ -113,7 +113,8 @@ public class BookFragment extends Fragment {
                                     Toast.makeText(mContext, "Book Id: " + book.getId(), Toast.LENGTH_SHORT).show();
                                     Intent intent = new Intent(getContext(), BookDetailsActivity.class);
                                     intent.putExtra(BookDetailsFragment.EXTRA_BOOK, book);
-                                    startActivityForResult(intent, BookDetailsActivity.BOOK_DETAILS_REQUEST_CODE);
+                                    //startActivityForResult(intent, BookDetailsActivity.BOOK_DETAILS_REQUEST_CODE);
+                                    startActivity(intent);
                                 }
                             });
                             mRecyclerView.setAdapter(bookAdapter);
