@@ -14,4 +14,7 @@
     <string name="pager_title_books_shelf">Books Shelf</string>
     <string name="pager_title_my_shelf">My Shelf</string>
 
+    <string name="action_remove_book">Remove Book</string>
+    <string name="dialog_message_are_you_sure_remove_book">Are you sure you want to remove this book?</string>
+
 </resources>

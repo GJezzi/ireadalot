@@ -1,6 +1,7 @@
 package com.example.android.ireadalot.fragment;
 
 
+import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -29,7 +30,10 @@ public class MyShelfFragment extends Fragment {
 
     private static final String LOG_TAG = "MyShelfFragment";
 
-    private FirebaseRecyclerAdapter<Book, BookAdapter.BookViewHolder> mBookAdapter;
+    private FirebaseRecyclerAdapter<Book, BookAdapter.BookViewHolder> mFirebaseRecyclerAdapter;
+    private Book mBook;
+    private Firebase mMyShelfListRef;
+    String mBookId;
 
     public MyShelfFragment() {
     }
@@ -41,13 +45,13 @@ public class MyShelfFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_my_shelf, container, false);
 
         final DatabaseReference firebaseDBReference = FirebaseDatabase.getInstance().getReference().child("myShelfBooks");
 
-        final Firebase myShelfListRef = new Firebase(Constants.FIREBASE_URL_MY_SHELF_LIST);
-        myShelfListRef.addValueEventListener(new ValueEventListener() {
+        mMyShelfListRef = new Firebase(Constants.FIREBASE_URL_MY_SHELF_LIST);
+        mMyShelfListRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.d(LOG_TAG, "The Data Has Changed!");
@@ -67,14 +71,15 @@ public class MyShelfFragment extends Fragment {
 
         final RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.my_shelf_recycler_view);
 
-          mBookAdapter = new FirebaseRecyclerAdapter<Book, BookAdapter.BookViewHolder>(
+
+          mFirebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Book, BookAdapter.BookViewHolder>(
                 Book.class,
                 R.layout.book_list_item,
                 BookAdapter.BookViewHolder.class,
                 firebaseDBReference
         ) {
             @Override
-            public void populateViewHolder( BookAdapter.BookViewHolder bookViewHolder, final Book book, final int position) {
+            public void populateViewHolder(final BookAdapter.BookViewHolder bookViewHolder, final Book book, final int position) {
                 StringBuilder builder = new StringBuilder();
 
                 bookViewHolder.mBookTitle.setText(book.getVolumeInfo().getTitle());
@@ -96,19 +101,29 @@ public class MyShelfFragment extends Fragment {
                 bookViewHolder.mBookCardView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Log.d(LOG_TAG, "You Clicked on: " + mBookAdapter.getRef(position).getKey());
-                        mBookAdapter.getRef(position).getKey();
                         Intent intent = new Intent(getContext(), BookDetailsActivity.class);
                         intent.putExtra(BookDetailsFragment.EXTRA_BOOK, book);
                         startActivity(intent);
                     }
                 });
+
+                bookViewHolder.mBookCardView.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View view) {
+                        mBookId = mFirebaseRecyclerAdapter.getRef(position).getKey();
+                        Log.d(LOG_TAG, "Book Position: " + mFirebaseRecyclerAdapter.getItemCount());
+                        Log.d(LOG_TAG, "Book Position: " + mBookId);
+                        removeBook();
+                        return true;
+                    }
+                });
             }
         };
+        //mFirebaseRecyclerAdapter.cleanup();
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
-        recyclerView.setAdapter(mBookAdapter);
+        recyclerView.setAdapter(mFirebaseRecyclerAdapter);
 
         return rootView;
     }
@@ -129,4 +144,10 @@ public class MyShelfFragment extends Fragment {
         myShelfFragment.setArguments(args);
         return myShelfFragment;
     }
+
+    public void removeBook() {
+        DialogFragment dialogFragment = RemoveBookDialogFragment.newInstance(mBook, mBookId);
+        dialogFragment.show(getActivity().getFragmentManager(), "RemoveBookFragment");
+    }
+
 }

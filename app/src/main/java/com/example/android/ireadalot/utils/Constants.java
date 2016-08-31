@@ -22,5 +22,5 @@ public class Constants {
      * Constants for bundles, extras and shared preferences keys
      */
     public static final String KEY_LAYOUT_RESOURCE = "LAYOUT_RESOURCE";
-    public static final String KEY_ITEM_ID = "ITEM_ID";
+    public static final String KEY_BOOK_ID = "BOOK_ID";
 }

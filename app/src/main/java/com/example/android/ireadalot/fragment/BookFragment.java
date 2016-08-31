@@ -107,13 +107,12 @@ public class BookFragment extends Fragment {
                         if(response.isSuccessful()) {
                             ArrayList<Book> books = response.body().getItems();
 
-                            BookAdapter bookAdapter = new BookAdapter(getContext(), books, new BookAdapter.OnBookClickListener() {
+                            final BookAdapter bookAdapter = new BookAdapter(getContext(), books, new BookAdapter.OnBookClickListener() {
                                 @Override
                                 public void onBookClicked(Book book) {
                                     Toast.makeText(mContext, "Book Id: " + book.getId(), Toast.LENGTH_SHORT).show();
                                     Intent intent = new Intent(getContext(), BookDetailsActivity.class);
                                     intent.putExtra(BookDetailsFragment.EXTRA_BOOK, book);
-                                    //startActivityForResult(intent, BookDetailsActivity.BOOK_DETAILS_REQUEST_CODE);
                                     startActivity(intent);
                                 }
                             });
