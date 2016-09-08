@@ -62,6 +62,7 @@ public class RemoveBookDialogFragment extends DialogFragment{
     private void removeBook() {
         final Firebase bookToRemoveRef = new Firebase(Constants.FIREBASE_URL_MY_SHELF_LIST).child(mBookId);
         Log.d(LOG_TAG, "Book Id: " + bookToRemoveRef);
-        bookToRemoveRef.removeValue();
+        bookToRemoveRef.getRef().removeValue();
+
     }
 }

@@ -29,6 +29,8 @@
                 android:value=".activity.MainActivity" />
 
         </activity>
+
+
     </application>
 
 </manifest>

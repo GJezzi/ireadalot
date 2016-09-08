@@ -33,7 +33,7 @@ import retrofit2.Response;
 
 public class BookFragment extends Fragment {
 
-    private static final String LOG_TAG = BookFragment.class.getSimpleName();
+    private static final String LOG_TAG = "BookFragment";
 
     private Context mContext;
     private Book mBook;

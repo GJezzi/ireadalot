@@ -82,6 +82,8 @@ public class MyShelfFragment extends Fragment {
             public void populateViewHolder(final BookAdapter.BookViewHolder bookViewHolder, final Book book, final int position) {
                 StringBuilder builder = new StringBuilder();
 
+                final String bookKey = mFirebaseRecyclerAdapter.getRef(position).getKey();
+
                 bookViewHolder.mBookTitle.setText(book.getVolumeInfo().getTitle());
                 bookViewHolder.mBookDesc.setText(book.getVolumeInfo().getDescription());
 
@@ -110,16 +112,17 @@ public class MyShelfFragment extends Fragment {
                 bookViewHolder.mBookCardView.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View view) {
-                        mBookId = mFirebaseRecyclerAdapter.getRef(position).getKey();
+                        //mBookId = mFirebaseRecyclerAdapter.getRef(position).getKey();
+                        mBookId = bookKey;
                         Log.d(LOG_TAG, "Book Position: " + mFirebaseRecyclerAdapter.getItemCount());
-                        Log.d(LOG_TAG, "Book Position: " + mBookId);
+                        Log.d(LOG_TAG, "Book Reference String: " + mBookId);
+                        //Log.d(LOG_TAG, "Book Firebase Reference: " + mFirebaseRecyclerAdapter.getRef(position));
                         removeBook();
                         return true;
                     }
                 });
             }
         };
-        //mFirebaseRecyclerAdapter.cleanup();
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setHasFixedSize(true);
@@ -148,6 +151,12 @@ public class MyShelfFragment extends Fragment {
     public void removeBook() {
         DialogFragment dialogFragment = RemoveBookDialogFragment.newInstance(mBook, mBookId);
         dialogFragment.show(getActivity().getFragmentManager(), "RemoveBookFragment");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mFirebaseRecyclerAdapter.cleanup();
     }
 
 }
