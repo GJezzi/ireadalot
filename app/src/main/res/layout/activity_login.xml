@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="vertical"
+        android:background="@drawable/book_shelf_background"
         android:paddingBottom="@dimen/activity_vertical_margin"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
@@ -80,7 +81,7 @@
             android:background="@color/colorPrimary"
             android:onClick="onSignInPressed"
             android:text="@string/button_signin_with_password"
-            android:textColor="@color/primaryText" />
+            android:textColor="@android:color/white" />
 
         <com.google.android.gms.common.SignInButton
             android:id="@+id/login_with_google"
@@ -99,6 +100,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
+                android:textColor="@color/primaryText"
                 android:text="@string/text_dont_have_account" />
 
             <TextView
@@ -107,6 +109,7 @@
                 android:layout_height="wrap_content"
                 android:onClick="onSignUpPressed"
                 android:padding="8dp"
+                android:textColor="@color/primaryText"
                 android:text="@string/button_create_account" />
         </LinearLayout>
     </LinearLayout>
