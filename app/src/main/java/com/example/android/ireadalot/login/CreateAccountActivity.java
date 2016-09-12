@@ -3,6 +3,7 @@ package com.example.android.ireadalot.login;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
@@ -14,8 +15,12 @@ import com.example.android.ireadalot.activity.BaseActivity;
 import com.example.android.ireadalot.utils.Constants;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
-import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -26,6 +31,8 @@ public class CreateAccountActivity extends BaseActivity {
     private final static String LOG_TAG = "CreateAccountActivity";
 
     private Firebase mFirebase;
+    private FirebaseAuth mFirebaseAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
 
     private ProgressDialog mProgressDialog;
     private EditText mEditTextNameCreate;
@@ -46,6 +53,33 @@ public class CreateAccountActivity extends BaseActivity {
         setContentView(R.layout.activity_create_account);
         mFirebase = new Firebase(Constants.FIREBASE_URL);
         initializeScreen();
+
+        mFirebaseAuth = FirebaseAuth.getInstance();
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    Log.d(LOG_TAG, "onAuthStateChanged:signedIn: " + user.getUid());
+                } else {
+                    Log.d(LOG_TAG, "onAuthStateChanged:signed_out");
+                }
+            }
+        };
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mFirebaseAuth.addAuthStateListener(mAuthListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if(mAuthListener != null) {
+            mFirebaseAuth.removeAuthStateListener(mAuthListener);
+        }
     }
 
     public void initializeScreen () {
@@ -77,45 +111,55 @@ public class CreateAccountActivity extends BaseActivity {
         boolean validEmail = isEmailValid(mUserEmail);
         boolean validUserName = isUserNameValid(mUserName);
         boolean validPassword = isPasswordValid(mUserPassword);
+        boolean takenEmail = isEmailTaken(FirebaseError.fromCode(FirebaseError.EMAIL_TAKEN), mUserEmail);
 
-        if(!validEmail || !validUserName || !validPassword) return;
+        if(!validEmail || !validUserName || !validPassword || takenEmail) return;
 
         mProgressDialog.show();
 
-        createFirebaseUserHelper(mUserEmail);
-
-    }
-
-    private void createFirebaseUserHelper(final String encodedMail) {
-        mFirebase.createUser("ingle1933@fleckens.hu", "TestBook123", new Firebase.ValueResultHandler<Map<String, Object>>() {
+        mFirebaseAuth.createUserWithEmailAndPassword(mUserEmail, mUserPassword).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
             @Override
-            public void onSuccess(Map<String, Object> result) {
-                mProgressDialog.dismiss();
-                Log.i(LOG_TAG, "Successfully created user account with uid: " + result.get("uid"));
-            }
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                Log.d(LOG_TAG, "createUserWithEmail:onComplete:" + task.isSuccessful());
 
-            @Override
-            public void onError(FirebaseError firebaseError) {
-                Log.d(LOG_TAG, "Error: " + firebaseError);
-                mProgressDialog.dismiss();
-
-                if(firebaseError.getCode() == FirebaseError.EMAIL_TAKEN) {
-                    mEditTextEmailCreate.setError("Sorry! That E-mail is taken!");
-                } else {
-                    showErrorToast(firebaseError.getMessage());
+                if (!task.isSuccessful()) {
+                    Toast.makeText(CreateAccountActivity.this, getString(R.string.email_account_creation_error), Toast.LENGTH_SHORT).show();
                 }
+                mProgressDialog.dismiss();
             }
         });
     }
 
-    private boolean isEmailValid (String email) {
-        return EMAIL_PATTERN.matcher(email).matches();
+    /**
+     * Creates a new user in Firebase from the Java POJO
+     */
+    private void createUserInFirebaseHelper(final String encodedEmail) {
+    }
 
+    private boolean isEmailTaken (FirebaseError firebaseError, String email) {
+        Log.d(LOG_TAG, getString(R.string.email_account_creation_error) + firebaseError);
+        mProgressDialog.dismiss();
+
+        if (firebaseError.getCode() == FirebaseError.EMAIL_TAKEN) {
+            mEditTextEmailCreate.setError("E-mail Taken!");
+        } else {
+            showErrorToast(firebaseError.getMessage());
+        }
+        return false;
+    }
+
+    private boolean isEmailValid (String email) {
+        boolean isGoodEmail = (email != null & Patterns.EMAIL_ADDRESS.matcher(email).matches());
+        if(!isGoodEmail){
+            mEditTextEmailCreate.setError("E-mail not Valid!");
+            return false;
+        }
+        return isGoodEmail;
     }
 
     private boolean isUserNameValid (String userName) {
-        if(userName.equals("")) {
-            mEditTextNameCreate.setError("Email cannot be empty!");
+        if(userName.equals(" ")) {
+            mEditTextNameCreate.setError("E-mail cannot be empty!");
             return false;
         }
         return true;

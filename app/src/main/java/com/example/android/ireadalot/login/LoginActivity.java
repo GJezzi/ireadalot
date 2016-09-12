@@ -1,7 +1,9 @@
 package com.example.android.ireadalot.login;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.EditText;
 
 import com.example.android.ireadalot.R;
@@ -41,5 +43,10 @@ public class LoginActivity extends BaseActivity {
         mProgressDialog.setMessage(getString(R.string.progress_dialog_signing_in));
         mProgressDialog.setCancelable(false);
 
+    }
+
+    public void onSignUpPressed(View view) {
+        Intent intent = new Intent(LoginActivity.this, CreateAccountActivity.class);
+        startActivity(intent);
     }
 }
