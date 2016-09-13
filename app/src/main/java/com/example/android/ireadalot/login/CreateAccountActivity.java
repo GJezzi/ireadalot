@@ -96,7 +96,7 @@ public class CreateAccountActivity extends BaseActivity {
     }
 
 
-    public void onSignInPressed() {
+    public void onSignInPressed(View view) {
         Intent intent = new Intent(CreateAccountActivity.this, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
@@ -121,6 +121,7 @@ public class CreateAccountActivity extends BaseActivity {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 Log.d(LOG_TAG, "createUserWithEmail:onComplete:" + task.isSuccessful());
+                Toast.makeText(CreateAccountActivity.this, "Account Created Successfully", Toast.LENGTH_SHORT).show();
 
                 if (!task.isSuccessful()) {
                     Toast.makeText(CreateAccountActivity.this, getString(R.string.email_account_creation_error), Toast.LENGTH_SHORT).show();
