@@ -1,10 +1,15 @@
 package com.example.android.ireadalot.login;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -12,6 +17,7 @@ import android.widget.Toast;
 import com.example.android.ireadalot.R;
 import com.example.android.ireadalot.activity.BaseActivity;
 import com.example.android.ireadalot.activity.MainActivity;
+import com.firebase.client.FirebaseError;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -26,6 +32,7 @@ public class LoginActivity extends BaseActivity {
 
     private static final String LOG_TAG = "LoginActivity";
 
+    private Context mContext;
     private ProgressDialog mProgressDialog;
     private EditText mEditTextEmailInput;
     private EditText mEditTextPasswordInput;
@@ -96,6 +103,14 @@ public class LoginActivity extends BaseActivity {
         mUserEmail = mEditTextEmailInput.getText().toString();
         mUserPassword = mEditTextPasswordInput.getText().toString();
 
+        boolean validEmail = isEmailValid(mUserEmail);
+        boolean networkAvailable = isNetworkAvailable(mContext);
+        boolean emptyForm = isFormEmpty();
+        boolean validPassword = isPasswordValid(FirebaseError.fromCode(FirebaseError.INVALID_PASSWORD), mUserPassword);
+        boolean existUser = userDoesNotExist(FirebaseError.fromCode(FirebaseError.USER_DOES_NOT_EXIST));
+
+        if(!validEmail || !networkAvailable || !emptyForm || !validPassword || !existUser) return;
+
         signInPassword();
     }
 
@@ -122,32 +137,69 @@ public class LoginActivity extends BaseActivity {
         });
     }
 
-    private void showErrorToast(String message) {
-        Toast.makeText(LoginActivity.this, message, Toast.LENGTH_LONG).show();
-    }
-
     private boolean isEmailValid(String email) {
-        return true;
+        boolean isGoodEmail = (email != null & Patterns.EMAIL_ADDRESS.matcher(email).matches());
+        if(!isGoodEmail){
+            mEditTextEmailInput.setError("E-mail not Valid!");
+            return false;
+        }
+        return isGoodEmail;
+
     }
 
-    private boolean hasNoConnection() {
-        return true;
+    private boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+
+        if (activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting()) {
+            return true;
+        } else {
+            Toast.makeText(LoginActivity.this, "No Internet Connection found!", Toast.LENGTH_SHORT).show();
+            return false;
+        }
     }
 
-    private boolean userDoesNotExist() {
-        return true;
+    private boolean userDoesNotExist(FirebaseError firebaseError) {
+        if (firebaseError.getCode() == FirebaseError.USER_DOES_NOT_EXIST) {
+            Toast.makeText(LoginActivity.this, "User does not exist!", Toast.LENGTH_SHORT).show();
+        } else {
+            showErrorToast(firebaseError.getMessage());
+        }
+        return false;
     }
 
-    private boolean isPasswordValid(String password) {
-        return true;
+    private boolean isPasswordValid(FirebaseError firebaseError, String password) {
+        if (firebaseError.getCode() == FirebaseError.INVALID_PASSWORD) {
+            mEditTextPasswordInput.setError("Invalid Password!");
+        } else {
+            showErrorToast(firebaseError.getMessage());
+        }
+        return false;
     }
 
-    private boolean isEmailEmpty(){
-        return true;
+    private boolean isFormEmpty(){
+        boolean valid = true;
+        mUserEmail = mEditTextEmailInput.getText().toString();
+        mUserPassword = mEditTextPasswordInput.getText().toString();
+
+        if(TextUtils.isEmpty(mUserEmail)) {
+            mEditTextEmailInput.setError("E-mail Required!");
+            valid = false;
+        } else {
+            mEditTextEmailInput.setError(null);
+        }
+
+        if (TextUtils.isEmpty(mUserPassword)) {
+            mEditTextPasswordInput.setError("Password Required!");
+            valid = false;
+        } else {
+            mEditTextPasswordInput.setError(null);
+        }
+        return valid;
     }
 
-    private boolean isPasswordEmpty() {
-        return true;
+    private void showErrorToast (String message) {
+        Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
     }
 
 }
