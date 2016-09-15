@@ -7,21 +7,25 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.ireadalot.R;
 import com.example.android.ireadalot.activity.BaseActivity;
 import com.example.android.ireadalot.activity.MainActivity;
+import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -45,6 +49,7 @@ public class LoginActivity extends BaseActivity {
     private EditText mEditTextPasswordInput;
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+    private Firebase mFirebaseRef;
 
     private String mUserEmail;
     private String mUserPassword;
@@ -62,7 +67,21 @@ public class LoginActivity extends BaseActivity {
 
         setContentView(R.layout.activity_login);
         initializeScreen();
-        onGoogleSignInPressed();
+
+
+        /**
+         * Call signInPassword() when user taps "Done" keyboard action
+         */
+        mEditTextPasswordInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
+
+                if (actionId == EditorInfo.IME_ACTION_DONE || keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
+                    signInPassword();
+                }
+                return true;
+            }
+        });
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -90,6 +109,16 @@ public class LoginActivity extends BaseActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
         mFirebaseAuth.addAuthStateListener(mAuthListener);
@@ -111,6 +140,76 @@ public class LoginActivity extends BaseActivity {
         }
     }
 
+    public void onSignUpPressed(View view) {
+        Intent intent = new Intent(LoginActivity.this, CreateAccountActivity.class);
+        startActivity(intent);
+    }
+
+    public void onSignInPressed(View view) {
+        mUserEmail = mEditTextEmailInput.getText().toString();
+        mUserPassword = mEditTextPasswordInput.getText().toString();
+
+        boolean validEmail = isEmailValid(mUserEmail);
+        boolean networkAvailable = isNetworkAvailable(mContext);
+        boolean validPassword = isPasswordValid(FirebaseError.fromCode(FirebaseError.INVALID_PASSWORD));
+        boolean userDoesNotExist = userDoesNotExist(FirebaseError.fromCode(FirebaseError.USER_DOES_NOT_EXIST));
+
+        if(!validEmail || !networkAvailable || !validPassword || userDoesNotExist) return;
+
+        signInPassword();
+    }
+
+    public void initializeScreen() {
+        mEditTextEmailInput = (EditText) findViewById(R.id.edit_text_email);
+        mEditTextPasswordInput = (EditText) findViewById(R.id.edit_text_password);
+
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setTitle(getString(R.string.progress_dialog_loading));
+        mProgressDialog.setMessage(getString(R.string.progress_dialog_signing_in));
+        mProgressDialog.setCancelable(false);
+
+        setUpGoogleSignIn();
+    }
+
+    public void signInPassword() {
+
+        String email = mEditTextEmailInput.getText().toString();
+        String password = mEditTextPasswordInput.getText().toString();
+
+        /**
+         * If email and password are not empty show progress dialog and try to authenticate
+         */
+        if (email.equals("")) {
+            mEditTextEmailInput.setError("E-mail required!");
+            return;
+        }
+
+        if (password.equals("")) {
+            mEditTextPasswordInput.setError("Password Required!");
+            return;
+        }
+
+        mProgressDialog.show();
+        mFirebaseAuth.signInWithEmailAndPassword(mUserEmail, mUserPassword).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+
+                if (task.isSuccessful()) {
+                    Log.d(LOG_TAG, "singInWithEmail:onComplete: " + task.isSuccessful());
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                }
+
+                if (!task.isSuccessful()) {
+                    Log.w(LOG_TAG, "signInWithEmail:failed", task.getException());
+                    Toast.makeText(LoginActivity.this, "Authentication Failed!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode, resultCode, data);
@@ -121,7 +220,12 @@ public class LoginActivity extends BaseActivity {
                 GoogleSignInAccount account = googleSignInResult.getSignInAccount();
                 firebaseAuthWithGoogle(account);
             } else {
-
+                if (googleSignInResult.getStatus().getStatusCode() == GoogleSignInStatusCodes.SIGN_IN_CANCELLED) {
+                    showErrorToast("The sign in was cancelled. Make sure you'e connected to the internet and try again.");
+                } else {
+                    showErrorToast("Error Handling the sign in: " + googleSignInResult.getStatus().getStatusMessage());
+                }
+                mProgressDialog.dismiss();
             }
         }
     }
@@ -154,73 +258,21 @@ public class LoginActivity extends BaseActivity {
         });
     }
 
-    public void initializeScreen() {
-        mEditTextEmailInput = (EditText) findViewById(R.id.edit_text_email);
-        mEditTextPasswordInput = (EditText) findViewById(R.id.edit_text_password);
-
-        mProgressDialog = new ProgressDialog(this);
-        mProgressDialog.setTitle(getString(R.string.progress_dialog_loading));
-        mProgressDialog.setMessage(getString(R.string.progress_dialog_signing_in));
-        mProgressDialog.setCancelable(false);
-
-    }
-
-    public void onSignUpPressed(View view) {
-        Intent intent = new Intent(LoginActivity.this, CreateAccountActivity.class);
-        startActivity(intent);
-    }
-
-    public void onSignInPressed(View view) {
-        mUserEmail = mEditTextEmailInput.getText().toString();
-        mUserPassword = mEditTextPasswordInput.getText().toString();
-
-        boolean validEmail = isEmailValid(mUserEmail);
-        boolean networkAvailable = isNetworkAvailable(mContext);
-        boolean emptyForm = isFormEmpty();
-        boolean validPassword = isPasswordValid(FirebaseError.fromCode(FirebaseError.INVALID_PASSWORD), mUserPassword);
-        boolean existUser = userDoesNotExist(FirebaseError.fromCode(FirebaseError.USER_DOES_NOT_EXIST));
-
-        if(!validEmail || !networkAvailable || !emptyForm || !validPassword || !existUser) return;
-
-        signInPassword();
-    }
-
-    public void onGoogleSignInPressed(){
+    public void setUpGoogleSignIn(){
         SignInButton signInButton = (SignInButton) findViewById(R.id.login_with_google);
+        signInButton.setSize(SignInButton.SIZE_WIDE);
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                signIn();
+                onGoogleSignInPressed(view);
             }
         });
     }
 
-    private void signIn () {
+    private void onGoogleSignInPressed (View view) {
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_GOOGLE_LOGIN);
-    }
-
-    public void signInPassword() {
         mProgressDialog.show();
-        mFirebaseAuth.signInWithEmailAndPassword(mUserEmail, mUserPassword).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-
-                if (task.isSuccessful()) {
-                    Log.d(LOG_TAG, "singInWithEmail:onComplete: " + task.isSuccessful());
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-                    finish();
-                }
-
-                if (!task.isSuccessful()) {
-                    Log.w(LOG_TAG, "signInWithEmail:failed", task.getException());
-                    Toast.makeText(LoginActivity.this, "Authentication Failed!", Toast.LENGTH_SHORT).show();
-                }
-                mProgressDialog.dismiss();
-            }
-        });
     }
 
     private boolean isEmailValid(String email) {
@@ -248,40 +300,20 @@ public class LoginActivity extends BaseActivity {
     private boolean userDoesNotExist(FirebaseError firebaseError) {
         if (firebaseError.getCode() == FirebaseError.USER_DOES_NOT_EXIST) {
             Toast.makeText(LoginActivity.this, "User does not exist!", Toast.LENGTH_SHORT).show();
+            return false;
         } else {
-            showErrorToast(firebaseError.getMessage());
+            return true;
         }
-        return false;
+
     }
 
-    private boolean isPasswordValid(FirebaseError firebaseError, String password) {
+    private boolean isPasswordValid(FirebaseError firebaseError) {
         if (firebaseError.getCode() == FirebaseError.INVALID_PASSWORD) {
             mEditTextPasswordInput.setError("Invalid Password!");
         } else {
             showErrorToast(firebaseError.getMessage());
         }
         return false;
-    }
-
-    private boolean isFormEmpty(){
-        boolean valid = true;
-        mUserEmail = mEditTextEmailInput.getText().toString();
-        mUserPassword = mEditTextPasswordInput.getText().toString();
-
-        if(TextUtils.isEmpty(mUserEmail)) {
-            mEditTextEmailInput.setError("E-mail Required!");
-            valid = false;
-        } else {
-            mEditTextEmailInput.setError(null);
-        }
-
-        if (TextUtils.isEmpty(mUserPassword)) {
-            mEditTextPasswordInput.setError("Password Required!");
-            valid = false;
-        } else {
-            mEditTextPasswordInput.setError(null);
-        }
-        return valid;
     }
 
     private void showErrorToast (String message) {

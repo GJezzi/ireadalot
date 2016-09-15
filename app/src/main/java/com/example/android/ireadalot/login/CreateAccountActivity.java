@@ -12,15 +12,21 @@ import android.widget.Toast;
 
 import com.example.android.ireadalot.R;
 import com.example.android.ireadalot.activity.BaseActivity;
+import com.example.android.ireadalot.model.User;
 import com.example.android.ireadalot.utils.Constants;
+import com.example.android.ireadalot.utils.Utils;
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.firebase.client.ServerValue;
+import com.firebase.client.ValueEventListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.HashMap;
 import java.util.regex.Pattern;
 
 /**
@@ -111,7 +117,7 @@ public class CreateAccountActivity extends BaseActivity {
         boolean validEmail = isEmailValid(mUserEmail);
         boolean validUserName = isUserNameValid(mUserName);
         boolean validPassword = isPasswordValid(mUserPassword);
-        boolean takenEmail = isEmailTaken(FirebaseError.fromCode(FirebaseError.EMAIL_TAKEN), mUserEmail);
+        final boolean takenEmail = isEmailTaken(FirebaseError.fromCode(FirebaseError.EMAIL_TAKEN), mUserEmail);
 
         if(!validEmail || !validUserName || !validPassword || takenEmail) return;
 
@@ -122,6 +128,8 @@ public class CreateAccountActivity extends BaseActivity {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 Log.d(LOG_TAG, "createUserWithEmail:onComplete:" + task.isSuccessful());
                 Toast.makeText(CreateAccountActivity.this, "Account Created Successfully", Toast.LENGTH_SHORT).show();
+
+                createUserInFirebaseHelper();
 
                 if (!task.isSuccessful()) {
                     Toast.makeText(CreateAccountActivity.this, getString(R.string.email_account_creation_error), Toast.LENGTH_SHORT).show();
@@ -134,7 +142,29 @@ public class CreateAccountActivity extends BaseActivity {
     /**
      * Creates a new user in Firebase from the Java POJO
      */
-    private void createUserInFirebaseHelper(final String encodedEmail) {
+    private void createUserInFirebaseHelper() {
+
+        final String encodedEmail = Utils.encodeEmail(mUserEmail);
+
+        final Firebase userLocation = new Firebase(Constants.FIREBASE_URL_USERS).child(encodedEmail);
+
+        userLocation.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.getValue() == null){
+                    HashMap<String, Object> timestampJoined = new HashMap<>();
+                    timestampJoined.put(Constants.FIREBASE_PROPERTY_TIMESTAMP, ServerValue.TIMESTAMP);
+
+                    User newUser = new User(encodedEmail, mUserName, timestampJoined);
+                    userLocation.push().setValue(newUser);
+                }
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                Log.d(LOG_TAG, getString(R.string.email_account_creation_error) + firebaseError.getMessage());
+            }
+        });
     }
 
     private boolean isEmailTaken (FirebaseError firebaseError, String email) {

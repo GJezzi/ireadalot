@@ -19,6 +19,7 @@ public class BaseActivity extends AppCompatActivity implements GoogleApiClient.O
     private final String LOG_TAG = BaseActivity.class.getSimpleName();
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
+    protected String mEncodedEmail;
     protected GoogleApiClient mGoogleApiClient;
 
     @Override
