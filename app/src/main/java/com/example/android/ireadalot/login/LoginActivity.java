@@ -3,10 +3,13 @@ package com.example.android.ireadalot.login;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.KeyEvent;
@@ -19,6 +22,8 @@ import android.widget.Toast;
 import com.example.android.ireadalot.R;
 import com.example.android.ireadalot.activity.BaseActivity;
 import com.example.android.ireadalot.activity.MainActivity;
+import com.example.android.ireadalot.utils.Constants;
+import com.example.android.ireadalot.utils.Utils;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.google.android.gms.auth.api.Auth;
@@ -53,21 +58,25 @@ public class LoginActivity extends BaseActivity {
 
     private String mUserEmail;
     private String mUserPassword;
+    private String mEncodedEmail;
 
     private boolean mGoogleIntentProgress;
 
     public static final int RC_GOOGLE_LOGIN = 1;
 
-    GoogleSignInAccount mGoogleSignInAccount;
+    GoogleSignInAccount mGoogleAccount;
     private GoogleApiClient mGoogleApiClient;
+    private FirebaseError mFirebaseError;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_login);
-        initializeScreen();
 
+        mFirebaseRef = new Firebase(Constants.FIREBASE_URL);
+
+        initializeScreen();
 
         /**
          * Call signInPassword() when user taps "Done" keyboard action
@@ -77,7 +86,7 @@ public class LoginActivity extends BaseActivity {
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
 
                 if (actionId == EditorInfo.IME_ACTION_DONE || keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
-                    signInPassword();
+                    signInPassword(mUserEmail, mUserPassword);
                 }
                 return true;
             }
@@ -151,12 +160,14 @@ public class LoginActivity extends BaseActivity {
 
         boolean validEmail = isEmailValid(mUserEmail);
         boolean networkAvailable = isNetworkAvailable(mContext);
-        boolean validPassword = isPasswordValid(FirebaseError.fromCode(FirebaseError.INVALID_PASSWORD));
-        boolean userDoesNotExist = userDoesNotExist(FirebaseError.fromCode(FirebaseError.USER_DOES_NOT_EXIST));
+        boolean validPassword = isPasswordValid(FirebaseError.fromCode(FirebaseError.INVALID_PASSWORD), mUserPassword);
+        boolean userDoesNotExist = userDoesNotExist(FirebaseError.fromCode(FirebaseError.USER_DOES_NOT_EXIST), mUserEmail);
+
 
         if(!validEmail || !networkAvailable || !validPassword || userDoesNotExist) return;
 
-        signInPassword();
+        //onAuthenticationError(mUserEmail, mUserPassword);
+        signInPassword(mUserEmail, mUserPassword);
     }
 
     public void initializeScreen() {
@@ -171,21 +182,11 @@ public class LoginActivity extends BaseActivity {
         setUpGoogleSignIn();
     }
 
-    public void signInPassword() {
+    public void signInPassword(String email, String Password) {
 
-        String email = mEditTextEmailInput.getText().toString();
-        String password = mEditTextPasswordInput.getText().toString();
+        Log.d(LOG_TAG, "signIn: " + email);
 
-        /**
-         * If email and password are not empty show progress dialog and try to authenticate
-         */
-        if (email.equals("")) {
-            mEditTextEmailInput.setError("E-mail required!");
-            return;
-        }
-
-        if (password.equals("")) {
-            mEditTextPasswordInput.setError("Password Required!");
+        if(!validateForm()) {
             return;
         }
 
@@ -198,12 +199,15 @@ public class LoginActivity extends BaseActivity {
                     Log.d(LOG_TAG, "singInWithEmail:onComplete: " + task.isSuccessful());
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    mProgressDialog.dismiss();
+                    getUserInfo();
                     startActivity(intent);
                     finish();
                 }
 
                 if (!task.isSuccessful()) {
                     Log.w(LOG_TAG, "signInWithEmail:failed", task.getException());
+                    mProgressDialog.dismiss();
                     Toast.makeText(LoginActivity.this, "Authentication Failed!", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -230,8 +234,9 @@ public class LoginActivity extends BaseActivity {
         }
     }
 
-    public void firebaseAuthWithGoogle(GoogleSignInAccount account){
+    public void firebaseAuthWithGoogle(final GoogleSignInAccount account){
         Log.d(LOG_TAG, "firebaseAuthWithGoogle: " + account.getId());
+        Log.d(LOG_TAG, "firebaseAuthWithGoogle: " + account.getEmail());
         mProgressDialog.show();
 
         AuthCredential authCredential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
@@ -243,6 +248,8 @@ public class LoginActivity extends BaseActivity {
                     Log.d(LOG_TAG, "singInWithEmail:onComplete: " + task.isSuccessful());
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    mProgressDialog.dismiss();
+                    getGoogleUserInfo(account);
                     startActivity(intent);
                     finish();
                 }
@@ -272,7 +279,28 @@ public class LoginActivity extends BaseActivity {
     private void onGoogleSignInPressed (View view) {
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_GOOGLE_LOGIN);
-        mProgressDialog.show();
+
+    }
+
+    private boolean validateForm() {
+        boolean valid = true;
+
+        String email = mEditTextEmailInput.getText().toString();
+        if(TextUtils.isEmpty(email)) {
+            mEditTextEmailInput.setError("E-mail Required.");
+            valid = false;
+        } else {
+            mEditTextEmailInput.setError(null);
+        }
+
+        String password = mEditTextPasswordInput.getText().toString();
+        if (TextUtils.isEmpty(password)) {
+            mEditTextPasswordInput.setError("Password Required.");
+            valid = false;
+        } else {
+            mEditTextPasswordInput.setError(null);
+        }
+        return valid;
     }
 
     private boolean isEmailValid(String email) {
@@ -297,27 +325,60 @@ public class LoginActivity extends BaseActivity {
         }
     }
 
-    private boolean userDoesNotExist(FirebaseError firebaseError) {
+    private boolean userDoesNotExist(FirebaseError firebaseError, String userEmail) {
         if (firebaseError.getCode() == FirebaseError.USER_DOES_NOT_EXIST) {
             Toast.makeText(LoginActivity.this, "User does not exist!", Toast.LENGTH_SHORT).show();
             return false;
         } else {
-            return true;
+            showErrorToast(firebaseError.getMessage());
         }
-
+        return true;
     }
 
-    private boolean isPasswordValid(FirebaseError firebaseError) {
+    private boolean isPasswordValid(FirebaseError firebaseError, String password) {
         if (firebaseError.getCode() == FirebaseError.INVALID_PASSWORD) {
             mEditTextPasswordInput.setError("Invalid Password!");
         } else {
             showErrorToast(firebaseError.getMessage());
         }
-        return false;
+        return true;
     }
 
     private void showErrorToast (String message) {
         Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void getUserInfo() {
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (firebaseUser != null) {
+            String name = firebaseUser.getDisplayName();
+            String email = firebaseUser.getEmail();
+            String provider = firebaseUser.getProviderId();
+
+            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+            SharedPreferences.Editor spe = sp.edit();
+
+            spe.putString(Constants.KEY_PROVIDER, provider).apply();
+            spe.putString(Constants.KEY_ENCODED_MAIL, email).apply();
+        }
+    }
+
+    private void getGoogleUserInfo(GoogleSignInAccount account) {
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences.Editor spe = sp.edit();
+
+        String unprocessedEmail;
+
+        if (mGoogleApiClient.isConnected()) {
+            unprocessedEmail = account.getEmail().toLowerCase();
+            spe.putString(Constants.KEY_GOOGLE_EMAIL, unprocessedEmail).apply();
+        } else {
+            unprocessedEmail = sp.getString(Constants.KEY_GOOGLE_EMAIL, null);
+        }
+        mEncodedEmail = Utils.encodeEmail(unprocessedEmail);
     }
 
 }

@@ -1,6 +1,8 @@
 package com.example.android.ireadalot.fragment;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -8,6 +10,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,6 +58,7 @@ public class BookDetailsFragment extends Fragment {
     private String mBookId;
 
 
+
     public BookDetailsFragment() {
         setHasOptionsMenu(true);
     }
@@ -81,6 +85,8 @@ public class BookDetailsFragment extends Fragment {
         mBookDescription = (TextView) rootView.findViewById(R.id.book_content_description);
 
         setActionBarTitle(mBook.getVolumeInfo().getTitle());
+
+        generateToolbarColor(mToolbar);
 
         loadBookCover(mBook);
         loadBookDetailsFields(mBook);
@@ -144,5 +150,24 @@ public class BookDetailsFragment extends Fragment {
 
     public void onBookAdded(Book book) {
         mRef.child(Constants.FIREBASE_MY_SHELF_BOOKS).push().setValue(book);
+    }
+
+    private void generateToolbarColor(Toolbar toolbar) {
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.id.book_details_book_cover);
+
+        Palette.PaletteAsyncListener paletteAsyncListener = new Palette.PaletteAsyncListener() {
+            @Override
+            public void onGenerated(Palette palette) {
+                int defaultColor = getResources().getColor(R.color.colorPrimary);
+                palette.getVibrantColor(defaultColor);
+            }
+        };
+
+        if (bitmap != null && !bitmap.isRecycled()) {
+            Palette.from(bitmap).generate(paletteAsyncListener);
+        }
+
+
+
     }
 }

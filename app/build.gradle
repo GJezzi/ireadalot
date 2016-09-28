@@ -40,25 +40,26 @@ dependencies {
 
     /* Firebase */
     compile 'com.firebaseui:firebase-ui:0.5.1'
-    compile 'com.google.firebase:firebase-core:9.4.0'
-    compile 'com.google.firebase:firebase-database:9.4.0'
-    compile 'com.google.firebase:firebase-storage:9.4.0'
-    compile 'com.google.firebase:firebase-auth:9.4.0'
+    compile 'com.google.firebase:firebase-core:9.6.0'
+    compile 'com.google.firebase:firebase-database:9.6.0'
+    compile 'com.google.firebase:firebase-storage:9.6.0'
+    compile 'com.google.firebase:firebase-auth:9.6.0'
     compile 'com.firebase:firebase-client-android:2.4.0'
 
     /* Google Services */
     compile 'com.google.apis:google-api-services-books:v1-rev86-1.22.0'
     compile 'com.google.api-client:google-api-client:1.19.1'
-    compile 'com.google.android.gms:play-services:9.4.0'
-    compile 'com.google.android.gms:play-services-safetynet:9.4.0'
-    compile 'com.google.android.gms:play-services-auth:9.4.0'
+    compile 'com.google.android.gms:play-services:9.6.0'
+    compile 'com.google.android.gms:play-services-safetynet:9.6.0'
+    compile 'com.google.android.gms:play-services-auth:9.6.0'
 
     /* Android Libraries */
-    compile 'com.android.support:appcompat-v7:24.2.0'
-    compile 'com.android.support:support-v4:24.2.0'
-    compile 'com.android.support:recyclerview-v7:24.2.0'
-    compile 'com.android.support:cardview-v7:24.2.0'
-    compile 'com.android.support:design:24.2.0'
+    compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.android.support:support-v4:24.2.1'
+    compile 'com.android.support:recyclerview-v7:24.2.1'
+    compile 'com.android.support:cardview-v7:24.2.1'
+    compile 'com.android.support:design:24.2.1'
+    compile 'com.android.support:palette-v7:24.2.1'
 
     /* Additional Libraries */
     compile 'com.github.bumptech.glide:glide:3.7.0'

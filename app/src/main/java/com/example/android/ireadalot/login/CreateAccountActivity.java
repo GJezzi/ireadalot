@@ -189,7 +189,7 @@ public class CreateAccountActivity extends BaseActivity {
     }
 
     private boolean isUserNameValid (String userName) {
-        if(userName.equals(" ")) {
+        if(userName.equals("")) {
             mEditTextNameCreate.setError("E-mail cannot be empty!");
             return false;
         }
@@ -199,6 +199,7 @@ public class CreateAccountActivity extends BaseActivity {
     private boolean isPasswordValid(String password) {
         if(password.length() < 6) {
             mEditTextPasswordCreate.setError("Password is not valid!");
+            return false;
         }
         return true;
     }

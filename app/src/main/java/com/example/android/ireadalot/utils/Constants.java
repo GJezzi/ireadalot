@@ -31,6 +31,9 @@ public class Constants {
      */
     public static final String KEY_LAYOUT_RESOURCE = "LAYOUT_RESOURCE";
     public static final String KEY_BOOK_ID = "BOOK_ID";
+    public static final String KEY_PROVIDER = "PROVIDER";
+    public static final String KEY_ENCODED_MAIL = "ENCODED_MAIL";
+    public static final String KEY_LIST_OWNER = "";
 
     /**
      * Constants for Firebase Login

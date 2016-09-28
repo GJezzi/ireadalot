@@ -71,7 +71,6 @@ public class MyShelfFragment extends Fragment {
 
         final RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.my_shelf_recycler_view);
 
-
           mFirebaseRecyclerAdapter = new FirebaseRecyclerAdapter<Book, BookAdapter.BookViewHolder>(
                 Book.class,
                 R.layout.book_list_item,
@@ -112,11 +111,9 @@ public class MyShelfFragment extends Fragment {
                 bookViewHolder.mBookCardView.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View view) {
-                        //mBookId = mFirebaseRecyclerAdapter.getRef(position).getKey();
                         mBookId = bookKey;
                         Log.d(LOG_TAG, "Book Position: " + mFirebaseRecyclerAdapter.getItemCount());
                         Log.d(LOG_TAG, "Book Reference String: " + mBookId);
-                        //Log.d(LOG_TAG, "Book Firebase Reference: " + mFirebaseRecyclerAdapter.getRef(position));
                         removeBook();
                         return true;
                     }

@@ -1,12 +1,15 @@
 package com.example.android.ireadalot.activity;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.android.ireadalot.R;
+import com.example.android.ireadalot.utils.Constants;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -20,21 +23,16 @@ public class BaseActivity extends AppCompatActivity implements GoogleApiClient.O
     private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     protected String mEncodedEmail;
+    protected String mProvider;
     protected GoogleApiClient mGoogleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-//                .requestIdToken(getString(R.string.default_web_client_id))
-//                .requestEmail()
-//                .build();
-//
-//        mGoogleApiClient = new GoogleApiClient.Builder(this)
-//                .enableAutoManage(this, this)
-//                .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-//                .build();
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(BaseActivity.this);
+        mEncodedEmail = sp.getString(Constants.KEY_ENCODED_MAIL, null);
+        mProvider = sp.getString(Constants.KEY_PROVIDER, null);
 
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
         int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
