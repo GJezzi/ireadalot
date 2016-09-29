@@ -24,7 +24,6 @@ public class BaseActivity extends AppCompatActivity implements GoogleApiClient.O
 
     protected String mEncodedEmail;
     protected String mProvider;
-    protected GoogleApiClient mGoogleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

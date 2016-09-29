@@ -2,7 +2,6 @@ package com.example.android.ireadalot.fragment;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -19,6 +18,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.example.android.ireadalot.R;
 import com.example.android.ireadalot.adapter.BookAdapter;
 import com.example.android.ireadalot.model.Book;
@@ -84,10 +85,9 @@ public class BookDetailsFragment extends Fragment {
         mBookPages = (TextView) rootView.findViewById(R.id.book_content_pages);
         mBookDescription = (TextView) rootView.findViewById(R.id.book_content_description);
 
+
         setActionBarTitle(mBook.getVolumeInfo().getTitle());
-
-        generateToolbarColor(mToolbar);
-
+        generatePalette();
         loadBookCover(mBook);
         loadBookDetailsFields(mBook);
         addBook();
@@ -97,7 +97,7 @@ public class BookDetailsFragment extends Fragment {
     public void loadBookCover(Book book) {
         Glide.with(getActivity())
                 .load(mBook.getVolumeInfo().getImageLinks().getThumbnail())
-                .crossFade()
+                .asBitmap()
                 .into(mBookIcon);
     }
 
@@ -152,22 +152,26 @@ public class BookDetailsFragment extends Fragment {
         mRef.child(Constants.FIREBASE_MY_SHELF_BOOKS).push().setValue(book);
     }
 
-    private void generateToolbarColor(Toolbar toolbar) {
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.id.book_details_book_cover);
-
-        Palette.PaletteAsyncListener paletteAsyncListener = new Palette.PaletteAsyncListener() {
-            @Override
-            public void onGenerated(Palette palette) {
-                int defaultColor = getResources().getColor(R.color.colorPrimary);
-                palette.getVibrantColor(defaultColor);
-            }
-        };
-
-        if (bitmap != null && !bitmap.isRecycled()) {
-            Palette.from(bitmap).generate(paletteAsyncListener);
-        }
-
-
-
+    private void generatePalette() {
+        Glide.with(getActivity())
+                .load(mBook.getVolumeInfo().getImageLinks().getThumbnail())
+                .asBitmap()
+                .into(new SimpleTarget<Bitmap>(R.id.adjust_width, R.id.adjust_height) {
+                    @Override
+                    public void onResourceReady(Bitmap resource, GlideAnimation<? super Bitmap> glideAnimation) {
+                        Palette.generateAsync(resource, new Palette.PaletteAsyncListener() {
+                            @Override
+                            public void onGenerated(Palette palette) {
+                                int primaryDark = getResources().getColor(R.color.colorPrimaryDark);
+                                int primary = getResources().getColor(R.color.colorPrimary);
+                                Palette.Swatch swatch = palette.getVibrantSwatch();
+                                //int titleColor = palette.getDarkVibrantColor(swatch.getTitleTextColor());
+                                mCollapsingToolbarLayout.setContentScrimColor(palette.getVibrantColor(primary));
+                                mCollapsingToolbarLayout.setStatusBarScrimColor(palette.getDarkVibrantColor(primaryDark));
+                                mCollapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));
+                            }
+                        });
+                    }
+                });
     }
 }
