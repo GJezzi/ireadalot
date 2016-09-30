@@ -8,7 +8,7 @@ import com.example.android.ireadalot.fragment.BookDetailsFragment;
 /**
  * Created by gjezzi on 25/07/16.
  */
-public class BookDetailsActivity extends BaseActivity {
+public class BookDetailsActivity extends MainActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState){

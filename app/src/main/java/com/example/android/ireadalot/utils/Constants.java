@@ -39,5 +39,6 @@ public class Constants {
      * Constants for Firebase Login
      */
     public static final String KEY_GOOGLE_EMAIL = "GOOGLE_EMAIL";
+    public static final String GOOGLE_PROVIDER = "google";
     public static final String PROVIDER_DATA_DISPLAY_NAME = "displayName";
 }

@@ -10,42 +10,18 @@ import android.view.MenuItem;
 
 import com.example.android.ireadalot.R;
 import com.example.android.ireadalot.adapter.PagerAdapter;
-import com.firebase.client.Firebase;
-import com.firebase.client.ValueEventListener;
+import com.example.android.ireadalot.login.LoginActivity;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends BaseActivity {
-    private Firebase mUserRef;
 
     private final String LOG_TAG = "MainActivity";
-
-    private ValueEventListener mUserRefListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        //mEncodedEmail = Utils.encodeEmail(mEncodedEmail);
-
-        //mUserRef = new Firebase(Constants.FIREBASE_URL_USERS).child(mEncodedEmail);
-
-//        mUserRefListener = mUserRef.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                User user = dataSnapshot.getValue(User.class);
-//
-////                if (user != null) {
-////                    String firstName = user.getUserName().split("\\s+")[0];
-////                    String title = firstName + "'s Shelf";
-////                    setTitle(title);
-////                }
-//            }
-//
-//            @Override
-//            public void onCancelled(FirebaseError firebaseError) {
-//                Log.e(LOG_TAG, "Read Error: " + firebaseError.getMessage());
-//            }
-//        });
 
         final ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
         FragmentPagerAdapter fragmentPagerAdapter = new PagerAdapter(getSupportFragmentManager(), getApplicationContext());
@@ -53,22 +29,47 @@ public class MainActivity extends BaseActivity {
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(viewPager);
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (user != null) {
+
+        }
     }
 
     @Override
     public void onDestroy () {
         super.onDestroy();
-        mUserRef.removeEventListener(mUserRefListener);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
+         /* Inflate the menu; this adds items to the action bar if it is present. */
+        getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem){
+        int id  = menuItem.getItemId();
+
+        if (id == R.id.action_logout) {
+            logout();
+            return true;
+        }
         return super.onOptionsItemSelected(menuItem);
+    }
+
+    protected void logout() {
+        FirebaseAuth.getInstance().signOut();
+        takeUserToLoginScreenOnAuth();
+    }
+
+    private void takeUserToLoginScreenOnAuth() {
+        Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 
     @Override
