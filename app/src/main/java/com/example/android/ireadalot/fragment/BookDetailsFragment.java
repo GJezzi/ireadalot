@@ -24,7 +24,12 @@ import com.example.android.ireadalot.R;
 import com.example.android.ireadalot.adapter.BookAdapter;
 import com.example.android.ireadalot.model.Book;
 import com.example.android.ireadalot.utils.Constants;
+import com.example.android.ireadalot.utils.Utils;
 import com.firebase.client.Firebase;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
@@ -38,11 +43,12 @@ public class BookDetailsFragment extends Fragment {
     public static final String EXTRA_BOOK = "book";
 
     final Firebase mRef = new Firebase(Constants.FIREBASE_URL);
-    //final DatabaseReference mDBRef = FirebaseDatabase.getInstance().getReference();
+    final DatabaseReference mDBRef = FirebaseDatabase.getInstance().getReference();
 
     private Firebase mMyShelfListRef;
     private ArrayList<Book> mMyshelfBookList;
     private BookAdapter mBookAdapter;
+
 
     private Context mContext;
     private ImageView mBookIcon;
@@ -85,11 +91,11 @@ public class BookDetailsFragment extends Fragment {
         mBookPages = (TextView) rootView.findViewById(R.id.book_content_pages);
         mBookDescription = (TextView) rootView.findViewById(R.id.book_content_description);
 
-
         setActionBarTitle(mBook.getVolumeInfo().getTitle());
         generatePalette();
         loadBookCover(mBook);
         loadBookDetailsFields(mBook);
+
         addBook();
         return rootView;
     }
@@ -149,7 +155,15 @@ public class BookDetailsFragment extends Fragment {
     }
 
     public void onBookAdded(Book book) {
-        mRef.child(Constants.FIREBASE_MY_SHELF_BOOKS).push().setValue(book);
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (firebaseUser != null) {
+            String userEmail = firebaseUser.getEmail();
+            userEmail = Utils.encodeEmail(userEmail);
+            mRef.child(Constants.FIREBASE_LOCATION_USERS)
+                    .child(userEmail)
+                    .child("myShelfBooks").push().setValue(book);
+        }
     }
 
     private void generatePalette() {
@@ -165,7 +179,6 @@ public class BookDetailsFragment extends Fragment {
                                 int primaryDark = getResources().getColor(R.color.colorPrimaryDark);
                                 int primary = getResources().getColor(R.color.colorPrimary);
                                 Palette.Swatch swatch = palette.getVibrantSwatch();
-                                //int titleColor = palette.getDarkVibrantColor(swatch.getTitleTextColor());
                                 mCollapsingToolbarLayout.setContentScrimColor(palette.getVibrantColor(primary));
                                 mCollapsingToolbarLayout.setStatusBarScrimColor(palette.getDarkVibrantColor(primaryDark));
                                 mCollapsingToolbarLayout.setExpandedTitleColor(getResources().getColor(android.R.color.transparent));

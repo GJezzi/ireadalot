@@ -12,7 +12,6 @@ import com.example.android.ireadalot.R;
 import com.example.android.ireadalot.adapter.PagerAdapter;
 import com.example.android.ireadalot.login.LoginActivity;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends BaseActivity {
 
@@ -29,12 +28,6 @@ public class MainActivity extends BaseActivity {
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(viewPager);
-
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-        if (user != null) {
-
-        }
     }
 
     @Override

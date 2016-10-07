@@ -1,6 +1,7 @@
 package com.example.android.ireadalot.login;
 
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,6 +13,7 @@ import android.widget.Toast;
 
 import com.example.android.ireadalot.R;
 import com.example.android.ireadalot.activity.BaseActivity;
+import com.example.android.ireadalot.model.Book;
 import com.example.android.ireadalot.model.User;
 import com.example.android.ireadalot.utils.Constants;
 import com.example.android.ireadalot.utils.Utils;
@@ -26,6 +28,9 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.math.BigInteger;
+import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 
@@ -48,6 +53,9 @@ public class CreateAccountActivity extends BaseActivity {
     private String mUserName;
     private String mUserPassword;
     private String mUserEmail;
+    private SecureRandom mSecureRandom = new SecureRandom();
+    private ArrayList<Book> mBookList;
+    private Book mBook;
 
     public final static Pattern EMAIL_PATTERN = Patterns.EMAIL_ADDRESS;
 
@@ -91,13 +99,10 @@ public class CreateAccountActivity extends BaseActivity {
     public void initializeScreen () {
         mEditTextNameCreate = (EditText) findViewById(R.id.edit_text_username_create);
         mEditTextEmailCreate = (EditText) findViewById(R.id.edit_text_email_create);
-        mEditTextPasswordCreate = (EditText) findViewById(R.id.edit_text_password_create);
-        //LinearLayout linearLayoutCreateAccountActivity = (LinearLayout) findViewById(R.id.linear_layout_create_account_activity);
-        //initializeBackground(linearLayoutCreateAccountActivity);
 
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setTitle(getResources().getString(R.string.progress_dialog_loading));
-        mProgressDialog.setMessage(getResources().getString(R.string.progress_dialog_signing_up));
+        mProgressDialog.setMessage(getResources().getString(R.string.progress_dialog_sending));
         mProgressDialog.setCancelable(false);
     }
 
@@ -111,15 +116,15 @@ public class CreateAccountActivity extends BaseActivity {
 
     public void onCreateAccountPressed(View view) {
         mUserName = mEditTextNameCreate.getText().toString();
-        mUserEmail = mEditTextEmailCreate.getText().toString();
-        mUserPassword = mEditTextPasswordCreate.getText().toString();
+        mUserEmail = mEditTextEmailCreate.getText().toString().toLowerCase();
+        mUserPassword = new BigInteger(130, mSecureRandom).toString(32);
 
         boolean validEmail = isEmailValid(mUserEmail);
         boolean validUserName = isUserNameValid(mUserName);
         boolean validPassword = isPasswordValid(mUserPassword);
         final boolean takenEmail = isEmailTaken(FirebaseError.fromCode(FirebaseError.EMAIL_TAKEN), mUserEmail);
 
-        if(!validEmail || !validUserName || !validPassword || takenEmail) return;
+        if(!validEmail || !validUserName || takenEmail) return;
 
         mProgressDialog.show();
 
@@ -130,6 +135,8 @@ public class CreateAccountActivity extends BaseActivity {
                 Toast.makeText(CreateAccountActivity.this, "Account Created Successfully", Toast.LENGTH_SHORT).show();
 
                 createUserInFirebaseHelper();
+
+                passwordReset();
 
                 if (!task.isSuccessful()) {
                     Toast.makeText(CreateAccountActivity.this, getString(R.string.email_account_creation_error), Toast.LENGTH_SHORT).show();
@@ -207,4 +214,32 @@ public class CreateAccountActivity extends BaseActivity {
     private void showErrorToast (String message) {
         Toast.makeText(CreateAccountActivity.this, message, Toast.LENGTH_SHORT).show();
     }
+
+    private void passwordReset () {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+
+        auth.sendPasswordResetEmail(mUserEmail)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(LOG_TAG, getString(R.string.check_your_email));
+
+                            Intent intent = new Intent(Intent.ACTION_MAIN);
+                            intent.addCategory(Intent.CATEGORY_APP_EMAIL);
+                            try {
+                                startActivity(intent);
+                                finish();
+                            } catch (ActivityNotFoundException ex) {
+
+                            }
+
+                            mProgressDialog.dismiss();
+                            Toast.makeText(CreateAccountActivity.this, getString(R.string.check_your_email), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
+
 }

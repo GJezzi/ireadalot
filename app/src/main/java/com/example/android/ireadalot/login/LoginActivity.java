@@ -160,13 +160,13 @@ public class LoginActivity extends BaseActivity {
         mUserEmail = mEditTextEmailInput.getText().toString();
         mUserPassword = mEditTextPasswordInput.getText().toString();
 
-        boolean validEmail = isEmailValid(mUserEmail);
-        boolean networkAvailable = isNetworkAvailable(mContext);
-        boolean validPassword = isPasswordValid(FirebaseError.fromCode(FirebaseError.INVALID_PASSWORD), mUserPassword);
-        boolean userDoesNotExist = userDoesNotExist(FirebaseError.fromCode(FirebaseError.USER_DOES_NOT_EXIST), mUserEmail);
+//        boolean validEmail = isEmailValid(mUserEmail);
+//        boolean networkAvailable = isNetworkAvailable(mContext);
+//        boolean validPassword = isPasswordValid(mUserPassword);
+//        boolean userDoesNotExist = userDoesNotExist(mUserEmail);
 
 
-        if(!validEmail || !networkAvailable || !validPassword || userDoesNotExist) return;
+        //if(!validEmail || !networkAvailable || !validPassword || userDoesNotExist) return;
 
         //onAuthenticationError(mUserEmail, mUserPassword);
         signInPassword(mUserEmail, mUserPassword);
@@ -327,21 +327,23 @@ public class LoginActivity extends BaseActivity {
         }
     }
 
-    private boolean userDoesNotExist(FirebaseError firebaseError, String userEmail) {
-        if (firebaseError.getCode() == FirebaseError.USER_DOES_NOT_EXIST) {
+    private boolean userDoesNotExist(String userEmail) {
+        if (mFirebaseError.getCode() == FirebaseError.USER_DOES_NOT_EXIST) {
             Toast.makeText(LoginActivity.this, "User does not exist!", Toast.LENGTH_SHORT).show();
             return false;
         } else {
-            showErrorToast(firebaseError.getMessage());
+            showErrorToast(mFirebaseError.getMessage());
         }
         return true;
     }
 
-    private boolean isPasswordValid(FirebaseError firebaseError, String password) {
-        if (firebaseError.getCode() == FirebaseError.INVALID_PASSWORD) {
+    private boolean isPasswordValid(String password) {
+
+        if (mFirebaseError.getCode() == FirebaseError.INVALID_PASSWORD) {
             mEditTextPasswordInput.setError("Invalid Password!");
+            Toast.makeText(LoginActivity.this, "Wrong Password!", Toast.LENGTH_SHORT).show();
         } else {
-            showErrorToast(firebaseError.getMessage());
+            showErrorToast(mFirebaseError.getMessage());
         }
         return true;
     }

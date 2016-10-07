@@ -17,6 +17,8 @@ public class User implements Serializable {
     private String mUserName;
     @SerializedName("timestamp")
     private HashMap<String, Object> mTimestamp;
+    @SerializedName("hasLoggedWithPassword")
+    private boolean mHasLoggedWithPassword;
 
     public User() {}
 
@@ -24,8 +26,8 @@ public class User implements Serializable {
         this.mUserEmail = userEmail;
         this.mUserName = userName;
         this.mTimestamp = timestampJoined;
+        this.mHasLoggedWithPassword = false;
     }
-
 
     public String getUserEmail() {
         return mUserEmail;
@@ -50,4 +52,9 @@ public class User implements Serializable {
     public void setTimestamp(HashMap<String, Object> timestampJoined) {
         this.mTimestamp = timestampJoined;
     }
+
+    public boolean isHasLoggedWithPassword() {
+        return mHasLoggedWithPassword;
+    }
+
 }

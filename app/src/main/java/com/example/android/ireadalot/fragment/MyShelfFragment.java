@@ -32,8 +32,10 @@ public class MyShelfFragment extends Fragment {
 
     private FirebaseRecyclerAdapter<Book, BookAdapter.BookViewHolder> mFirebaseRecyclerAdapter;
     private Book mBook;
+    private boolean mCurrentUserIsOwner = false;
     private Firebase mMyShelfListRef;
     String mBookId;
+    private String mUserEmail;
 
     public MyShelfFragment() {
     }
@@ -48,7 +50,7 @@ public class MyShelfFragment extends Fragment {
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_my_shelf, container, false);
 
-        final DatabaseReference firebaseDBReference = FirebaseDatabase.getInstance().getReference().child("myShelfBooks");
+        DatabaseReference firebaseDBReference = FirebaseDatabase.getInstance().getReference().child("myShelfBooks");
 
         mMyShelfListRef = new Firebase(Constants.FIREBASE_URL_MY_SHELF_LIST);
         mMyShelfListRef.addValueEventListener(new ValueEventListener() {
