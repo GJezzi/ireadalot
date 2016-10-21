@@ -18,11 +18,14 @@ import com.example.android.ireadalot.activity.BookDetailsActivity;
 import com.example.android.ireadalot.adapter.BookAdapter;
 import com.example.android.ireadalot.model.Book;
 import com.example.android.ireadalot.utils.Constants;
+import com.example.android.ireadalot.utils.Utils;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -32,13 +35,9 @@ public class MyShelfFragment extends Fragment {
 
     private FirebaseRecyclerAdapter<Book, BookAdapter.BookViewHolder> mFirebaseRecyclerAdapter;
     private Book mBook;
-    private boolean mCurrentUserIsOwner = false;
-    private Firebase mMyShelfListRef;
-    String mBookId;
-    private String mUserEmail;
+    private String mBookId;
 
-    public MyShelfFragment() {
-    }
+    public MyShelfFragment() { }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,10 +49,16 @@ public class MyShelfFragment extends Fragment {
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_my_shelf, container, false);
 
-        DatabaseReference firebaseDBReference = FirebaseDatabase.getInstance().getReference().child("myShelfBooks");
 
-        mMyShelfListRef = new Firebase(Constants.FIREBASE_URL_MY_SHELF_LIST);
-        mMyShelfListRef.addValueEventListener(new ValueEventListener() {
+
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+        String userEmail = firebaseUser.getEmail();
+        userEmail = Utils.encodeEmail(userEmail);
+
+        DatabaseReference firebaseDBReference = FirebaseDatabase.getInstance().getReference().child("users").child(userEmail).child("myShelfBooks");
+
+        Firebase myShelfListRef = new Firebase(Constants.FIREBASE_URL_MY_SHELF_LIST);
+        myShelfListRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.d(LOG_TAG, "The Data Has Changed!");
@@ -157,5 +162,4 @@ public class MyShelfFragment extends Fragment {
         super.onDestroy();
         mFirebaseRecyclerAdapter.cleanup();
     }
-
 }

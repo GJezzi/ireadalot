@@ -48,8 +48,7 @@ public class BookDetailsFragment extends Fragment {
     private Firebase mMyShelfListRef;
     private ArrayList<Book> mMyshelfBookList;
     private BookAdapter mBookAdapter;
-
-
+    
     private Context mContext;
     private ImageView mBookIcon;
     private TextView mAuthorName;
@@ -63,8 +62,6 @@ public class BookDetailsFragment extends Fragment {
     private CollapsingToolbarLayout mCollapsingToolbarLayout;
     private FloatingActionButton mFab;
     private String mBookId;
-
-
 
     public BookDetailsFragment() {
         setHasOptionsMenu(true);
@@ -187,4 +184,5 @@ public class BookDetailsFragment extends Fragment {
                     }
                 });
     }
+
 }

@@ -24,7 +24,6 @@ import com.example.android.ireadalot.activity.BaseActivity;
 import com.example.android.ireadalot.activity.MainActivity;
 import com.example.android.ireadalot.utils.Constants;
 import com.example.android.ireadalot.utils.Utils;
-import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -54,7 +53,6 @@ public class LoginActivity extends BaseActivity {
     private EditText mEditTextPasswordInput;
     private FirebaseAuth mFirebaseAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-    private Firebase mFirebaseRef;
 
     private String mUserEmail;
     private String mUserPassword;
@@ -73,8 +71,6 @@ public class LoginActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_login);
-
-        mFirebaseRef = new Firebase(Constants.FIREBASE_URL);
 
         initializeScreen();
 
